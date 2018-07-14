@@ -2,7 +2,6 @@ source https://nuget.org/api/v2
 storage:none
 
 nuget FSharp.Core redirects: force
-nuget Saturn
 
 nuget Fable.Core
 nuget Fable.Import.Browser
