@@ -6,6 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Config.fs" />
+    <Compile Include="Helpers.fs" />
+    <Compile Include="Users\Model.fs" />
+    <Compile Include="Users\Repository.fs" />
+    <Compile Include="Users\Service.fs" />
+    <Compile Include="Users\Controller.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
@@ -13,5 +19,5 @@
     <PackageReference Include="FSharp.Core" Version="4.5.0" />
     <PackageReference Include="Saturn" Version="0.7.*" />
     <PackageReference Include="TaskBuilder.fs" Version="2.0.0" />
-</ItemGroup>
+  </ItemGroup>
 </Project>
