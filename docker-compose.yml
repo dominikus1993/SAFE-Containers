@@ -10,4 +10,4 @@ services:
       - "5001:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://0.0.0.0:80
+      - API_URL=http://0.0.0.0:80
