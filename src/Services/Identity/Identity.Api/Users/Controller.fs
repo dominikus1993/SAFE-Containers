@@ -14,7 +14,7 @@ module Controller =
     let handleGetToken =
         fun (next : HttpFunc) (ctx : HttpContext) ->
             task {
-                let! loginDto = ctx.BindJsonAsync<LoginDto>()
+                let! loginDto = Controller.getModel<LoginDto> ctx
                 let config = ctx.GetService<IOptions<JwtConfig>>()
                 let usersRepository = ctx.GetService<IUsersRepository>()
                 let! tokenResult = UsersService.loginAsync usersRepository.GetUser (Crypto.jwt(config.Value)) loginDto
@@ -28,7 +28,7 @@ module Controller =
     let handleRegister =
         fun (ctx : HttpContext) ->
             task {
-                let! registerDto = ctx.BindJsonAsync<RegisterDto>()
+                let! registerDto = Controller.getModel<RegisterDto> ctx
                 let config = ctx.GetService<IOptions<JwtConfig>>()
                 let usersRepository = ctx.GetService<IUsersRepository>()
                 let! result = UsersService.registerUser usersRepository.RegisterUser (Crypto.jwt(config.Value)) registerDto
