@@ -7,6 +7,9 @@
 
   <ItemGroup>
     <Compile Include="Model.fs" />
+    <Compile Include="Repository.fs" />
+    <Compile Include="Service.fs" />
+    <Compile Include="Controller.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,0 +1,1 @@
+namespace Catalog.Api.Services
