@@ -6,9 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Model.fs" />
-    <Compile Include="Repository.fs" />
-    <Compile Include="Service.fs" />
     <Compile Include="Controller.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
@@ -18,5 +15,8 @@
     <PackageReference Include="MongoDB.Driver" Version="2.7.0" />
     <PackageReference Include="Saturn" Version="0.7.*" />
     <PackageReference Include="TaskBuilder.fs" Version="2.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Catalog.Domain\Catalog.Domain.fsproj" />
   </ItemGroup>
 </Project>
