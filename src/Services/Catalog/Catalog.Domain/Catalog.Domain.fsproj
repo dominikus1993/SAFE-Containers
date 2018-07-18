@@ -9,5 +9,8 @@
     <Compile Include="Repository.fs" />
     <Compile Include="Service.fs" />
   </ItemGroup>
-
+  <ItemGroup>
+      <PackageReference Include="FSharp.Core" Version="4.5.0" />
+      <PackageReference Include="MongoDB.Driver" Version="2.7.0" />
+  </ItemGroup>
 </Project>
