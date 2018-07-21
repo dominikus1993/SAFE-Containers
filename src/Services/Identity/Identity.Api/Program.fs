@@ -1,4 +1,4 @@
-﻿module SmartAlarm.Auth.App
+﻿module Identity.Api.App
 
 open System
 open Microsoft.Extensions.DependencyInjection
