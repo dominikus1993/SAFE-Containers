@@ -32,7 +32,7 @@ let configureServices (services : IServiceCollection) =
         .AddEntityFrameworkStores<IdentityDbContext<ApplicationUser>>()
         .AddDefaultTokenProviders() |> ignore
     services.Configure<JwtConfig>(configuration.GetSection("jwt")) |> ignore
-    services.AddTransient<IUsersRepository>(fun provider -> 
+    services.AddTransient<IUsersRepository>(fun provider ->
                                                     let siginManager = provider.GetService<SignInManager<ApplicationUser>>()
                                                     let userManager = provider.GetService<UserManager<ApplicationUser>>()
                                                     Repository.usersRepository(Identity(userManager, siginManager))
@@ -40,30 +40,10 @@ let configureServices (services : IServiceCollection) =
     services
 
 
-type Response = {
-    a: string
-    b: string
-}
-
-type DifferentResponse = {
-    c: int
-    d: DateTime
-}
-
-let typedController = controller {
-    index (fun _ -> task {
-        return {a = "hello"; b = "world"}
-    })
-
-    add (fun _ -> task {
-        return {c = 123; d = DateTime.Now}
-    })
-}
 
 let topRouter = router {
     post "/token" handleGetToken
     forward "/users" usersController
-    forward "/typed" typedController
 }
 
 let app = application {
