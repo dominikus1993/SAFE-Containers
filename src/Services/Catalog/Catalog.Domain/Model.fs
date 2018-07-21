@@ -6,7 +6,7 @@ open MongoDB.Bson
 
 [<CLIMutable>]
 [<BsonIgnoreExtraElements>]
-type ProductDetails = { [<BsonElement>]  Weight: float; [<BsonElement>] WeightUnits: string; [<BsonElement>] Manufacturer: string; [<BsonElement>] Color: string }
+type ProductDetails = { [<BsonElement>]  Weight: double; [<BsonElement>] WeightUnits: string; [<BsonElement>] Manufacturer: string; [<BsonElement>] Color: string }
 
 [<CLIMutable>]
 type Product = { [<BsonId>] [<BsonRepresentation(BsonType.String)>] Id: Guid;
