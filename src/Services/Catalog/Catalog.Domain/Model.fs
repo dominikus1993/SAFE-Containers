@@ -14,7 +14,7 @@ type Product = { [<BsonId>] [<BsonRepresentation(BsonType.String)>] Id: Guid;
                  [<BsonElement>] Name: string;
                  [<BsonElement>] Description: string;
                  [<BsonElement>] Details: ProductDetails
-                 [<BsonElement>] Price: decimal
+                 [<BsonElement>] Price: double // Decimal comparasion in dotnet use string
                  [<BsonElement>] AvailableStock: int
                  [<BsonElement>] PictureUri: string
                  [<BsonElement>] Tags: string array }
