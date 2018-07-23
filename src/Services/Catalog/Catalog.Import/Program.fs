@@ -24,7 +24,7 @@ let generate (q: int) =
   let f = Faker<Product>()
             .CustomInstantiator(fun f ->
                           { Id = Guid.NewGuid()
-                            Slug = f.Commerce.Product()
+                            Slug = f.Lorem.Slug()
                             Name = f.Commerce.ProductName()
                             Description = f.Commerce.ProductAdjective()
                             Details = { Weight = f.Random.Double(); WeightUnits = "kg"; Manufacturer = f.Company.CompanyName(); Color = f.Internet.Color() }
