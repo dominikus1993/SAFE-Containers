@@ -10,22 +10,18 @@ open Microsoft.Extensions.Configuration
 open Saturn
 open MongoDB.Driver
 open Catalog.Api.Controllers
+open Catalog.Api.Repositories
 
 let envGetOrElse key elseVal =
     match System.Environment.GetEnvironmentVariable(key) with
     | null -> elseVal
     | res -> res
 
-// ---------------------------------
-// Configuration
-// ---------------------------------
-let configuration =
-    ConfigurationBuilder().AddJsonFile("appsettings.json").AddEnvironmentVariables().Build()
-
-
-
 let configureServices (services : IServiceCollection) =
-    services.AddSingleton<MongoClient>(fun opt -> MongoClient(opt.GetService<>)) |> ignore
+    services.AddSingleton<IMongoClient>(fun opt -> MongoClient(envGetOrElse "MONGO_CONNECTION" "mongodb://127.0.0.1:27017") :> IMongoClient) |> ignore
+    services.AddTransient<IProductRepository>(fun provider ->
+                                                    Product.storage(MongoDb(provider.GetService<IMongoClient>().GetDatabase("Catalog")))
+                                            ) |> ignore
     services
 
 
