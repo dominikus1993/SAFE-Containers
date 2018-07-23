@@ -8,6 +8,16 @@ open MongoDB.Driver
 open MongoDB.Driver.Core.Configuration
 open Catalog.Api.Services
 open System.Numerics
+open MongoDB.Driver
+open MongoDB.Bson
+open MongoDB.Driver
+open Catalog.Api.Repositories
+open MongoDB.Driver
+open MongoDB.Driver
+open Bogus.Bson
+open MongoDB.Driver
+
+let inline (=>) k v = k, box v
 
 type Arguments =
     | [<AltCommandLine("-c")>] ConnectionString of connstr:string
@@ -45,6 +55,7 @@ let main argv =
       let collection = db.GetCollection<Product>("products")
       let p = generate(results.GetResult(ProductsQuantity, defaultValue = 100))
       collection.InsertManyAsync(p) |> Async.AwaitTask |> Async.RunSynchronously
+      collection.Indexes.CreateOneAsync(CreateIndexModel<Product>(IndexKeysDefinition<Product>.op_Implicit(BsonDocument(dict [ "Slug" => 1 ])))) |> Async.AwaitTask |> Async.RunSynchronously |> ignore
     else
       parser.PrintUsage() |> printfn "%s"
     0 // return an integer exit code
