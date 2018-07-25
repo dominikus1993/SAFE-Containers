@@ -1,1 +1,5 @@
-GET http://localhost:8085/products/doloremque-numquam-tenetur HTTP/1.1
+GET http://localhost:8085/products/vel-ducimus-qui HTTP/1.1
+
+###
+
+GET http://localhost:8085/products?pageSize=15&pageIndex=1 HTTP/1.1
