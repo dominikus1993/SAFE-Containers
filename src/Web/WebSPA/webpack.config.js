@@ -20,12 +20,12 @@ var babelOptions = fableUtils.resolveBabelOptions({
 
 
 const isProduction = process.argv.indexOf("-p") >= 0;
-const port = process.env.WEBSPA_PORT || "3000";
+const port = process.env.WEBSPA_PORT || "8080";
 console.log("Bundling for " + (isProduction ? "production" : "development") + "...");
 
 module.exports = {
   devtool: "source-map",
-  entry: resolve('./Client.fsproj'),
+  entry: resolve('./WebSPA.fsproj'),
   mode: isProduction ? "production" : "development",
   output: {
     path: resolve('./public'),
@@ -36,12 +36,6 @@ module.exports = {
     modules: [ resolve("../../../node_modules/")]
   },
   devServer: {
-    proxy: {
-      '/api/*': {
-        target: 'http://localhost:' + port,
-        changeOrigin: true
-      }
-    },
     hot: true,
     inline: true,
     historyApiFallback: true,
