@@ -1,7 +1,7 @@
 version: '3.3'
 
 services:
-  auth.api:
+  identity.api:
     image: safe_shop/identity.api:${TAG:-latest}
     build:
       context: .
@@ -28,5 +28,5 @@ services:
     ports:
       - "5000:80"
     depends_on:
-      - auth.api
+      - identity.api
       - catalog.api

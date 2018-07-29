@@ -1,4 +1,4 @@
-GET http://localhost:8085/products/vel-ducimus-qui HTTP/1.1
+GET http://localhost:5000/catalog/products/vel-ducimus-qui HTTP/1.1
 
 ###
 
