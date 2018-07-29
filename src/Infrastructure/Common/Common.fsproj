@@ -6,10 +6,15 @@
 
   <ItemGroup>
     <Compile Include="MongoDb.fs" />
+    <Compile Include="Saturn.fs" />
+    <Compile Include="Environment.fs" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="FSharp.Core" Version="4.5.*" />
     <PackageReference Include="MongoDB.Driver" Version="2.7.0" />
+    <PackageReference Include="Saturn" Version="0.7.*" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.1.0"/>
   </ItemGroup>
 
 </Project>

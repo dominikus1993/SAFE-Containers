@@ -1,1 +1,1 @@
-namespace Common.MongoDb
+module MongoDb

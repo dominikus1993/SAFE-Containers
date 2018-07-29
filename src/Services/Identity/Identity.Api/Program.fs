@@ -12,11 +12,6 @@ open Saturn
 open Identity.Domain.Config
 open Identity.Api.Auth.Users.Controller
 
-let envGetOrElse key elseVal =
-    match System.Environment.GetEnvironmentVariable(key) with
-    | null -> elseVal
-    | res -> res
-
 // ---------------------------------
 // Configuration
 // ---------------------------------
@@ -48,7 +43,8 @@ let topRouter = router {
 
 let app = application {
     use_router topRouter
-    url (envGetOrElse "API_URL" "http://0.0.0.0:8085/")
+    use_pathbase (Environment.getOrElse "PATH_BASE" "")
+    url (Environment.getOrElse "API_URL" "http://0.0.0.0:8085/")
     service_config (configureServices)
 }
 

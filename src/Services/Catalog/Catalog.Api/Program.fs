@@ -12,13 +12,8 @@ open MongoDB.Driver
 open Catalog.Api.Controllers
 open Catalog.Api.Repositories
 
-let envGetOrElse key elseVal =
-    match System.Environment.GetEnvironmentVariable(key) with
-    | null -> elseVal
-    | res -> res
-
 let configureServices (services : IServiceCollection) =
-    services.AddSingleton<IMongoClient>(fun opt -> MongoClient(envGetOrElse "MONGO_CONNECTION" "mongodb://127.0.0.1:27017") :> IMongoClient) |> ignore
+    services.AddSingleton<IMongoClient>(fun opt -> MongoClient(Environment.getOrElse "MONGO_CONNECTION" "mongodb://127.0.0.1:27017") :> IMongoClient) |> ignore
     services.AddTransient<IProductRepository>(fun provider ->
                                                     Product.storage(MongoDb(provider.GetService<IMongoClient>().GetDatabase("Catalog")))
                                             ) |> ignore
@@ -32,7 +27,8 @@ let topRouter = router {
 
 let app = application {
     use_router topRouter
-    url (envGetOrElse "API_URL" "http://0.0.0.0:8085/")
+    use_pathbase (Environment.getOrElse "PATH_BASE" "")
+    url (Environment.getOrElse "API_URL" "http://0.0.0.0:8085/")
     service_config (configureServices)
 }
 

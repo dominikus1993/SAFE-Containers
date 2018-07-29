@@ -11,7 +11,7 @@
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.1" />
     <PackageReference Include="FSharp.Core" Version="4.5.*" />
     <PackageReference Include="MongoDB.Driver" Version="2.7.0" />
     <PackageReference Include="Saturn" Version="0.7.*" />
@@ -19,5 +19,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Catalog.Domain\Catalog.Domain.fsproj" />
+    <ProjectReference Include="..\..\..\Infrastructure\Common\Common.fsproj" />
   </ItemGroup>
 </Project>
