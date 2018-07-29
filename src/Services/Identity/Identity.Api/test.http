@@ -1,0 +1,18 @@
+POST http://localhost:8085/token
+Accept: */*
+Content-Type: application/json
+Cache-Control: no-cache
+
+{ "username": "admin", "password": "5G4YjVga*" }
+
+
+###
+
+POST http://localhost:8085/users
+Accept: */*
+Content-Type: application/json
+Cache-Control: no-cache
+
+{ "username": "admin", "password": "5G4YjVga*", "email": "admin@admin.admin" }
+
+###
