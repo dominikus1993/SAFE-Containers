@@ -1,12 +1,6 @@
 ﻿module Identity.Api.App
 
-open System
 open Microsoft.Extensions.DependencyInjection
-open Giraffe
-open Microsoft.AspNetCore.Identity
-open Microsoft.AspNetCore.Identity.EntityFrameworkCore
-open Microsoft.EntityFrameworkCore
-open Microsoft.Extensions.Configuration
 open Saturn
 open MongoDB.Driver
 open Catalog.Api.Controllers

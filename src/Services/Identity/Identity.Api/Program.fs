@@ -1,8 +1,6 @@
 ﻿module Identity.Api.App
 
-open System
 open Microsoft.Extensions.DependencyInjection
-open Giraffe
 open Identity.Api.Domain.Users
 open Microsoft.AspNetCore.Identity
 open Microsoft.AspNetCore.Identity.EntityFrameworkCore
