@@ -18,8 +18,10 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - API_URL=http://0.0.0.0:80
-      - MONGO_CONNECTION=mongodb://127.0.0.1:27017
+      - MONGO_CONNECTION=mongodb://catalog.data:27017
       - PATH_BASE=/catalog
+    depends_on:
+      - catalog.data
   shopping.apigw:
     image: safe_shop/shopping.apigw:${TAG:-latest}
     build:
@@ -30,3 +32,8 @@ services:
     depends_on:
       - identity.api
       - catalog.api
+  catalog.data:
+    image: mongo
+    ports:
+      - "27017:27017"
+
