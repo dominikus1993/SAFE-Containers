@@ -9,7 +9,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - API_URL=http://0.0.0.0:80
-      - PATH_BASE=/catalog
+      - PATH_BASE=/identity
   catalog.api:
     image: safe_shop/catalog.api:${TAG:-latest}
     build:
