@@ -1,5 +1,5 @@
-GET http://localhost:5000/catalog/products/vel-ducimus-qui HTTP/1.1
+GET http://localhost:5000/catalog/products/dolores-vel-itaque HTTP/1.1
 
 ###
 
-GET http://localhost:8085/products?pageSize=15&pageIndex=1 HTTP/1.1
+GET http://localhost:5000/catalog/products?pageSize=15&pageIndex=1 HTTP/1.1
