@@ -9,6 +9,11 @@ WORKDIR /src/src/Services/Catalog/Catalog.Api
 RUN dotnet restore -nowarn:msb3202,nu1503
 RUN dotnet build -c Release -o /app
 
+FROM build as test
+WORKDIR /src/src/Services/Catalog/Catalog.UnitTests
+RUN dotnet restore -nowarn:msb3202,nu1503
+RUN dotnet test
+
 FROM build AS publish
 RUN dotnet publish --no-restore -c Release -o /app
 

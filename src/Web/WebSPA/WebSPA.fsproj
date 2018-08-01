@@ -4,6 +4,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Urls.fs" />
+    <Compile Include="Catalog/Types.fs" />
+    <Compile Include="Catalog/State.fs" />
+    <Compile Include="Catalog/View.fs" />
     <Compile Include="App.fs" />
   </ItemGroup>
   <Import Project="..\..\..\.paket\Paket.Restore.targets" />

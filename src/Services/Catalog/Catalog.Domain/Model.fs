@@ -18,3 +18,15 @@ type Product = { [<BsonId>] [<BsonRepresentation(BsonType.String)>] Id: Guid;
                  [<BsonElement>] AvailableStock: int
                  [<BsonElement>] PictureUri: string
                  [<BsonElement>] Tags: string array }
+with
+  static member Zero() =
+    { Id = Guid.NewGuid()
+      Slug = ""
+      Name = ""
+      Description = ""
+      Details = { Weight = 0.; WeightUnits = ""; Manufacturer = ""; Color = "" }
+      Price = 0.
+      AvailableStock = 0
+      PictureUri = ""
+      Tags = [||]
+    }

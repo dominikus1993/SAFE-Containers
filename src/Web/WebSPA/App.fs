@@ -4,6 +4,8 @@ open Fable.Core
 open Fable.Core.JsInterop
 open Fable.Import
 open Elmish
+open Fable.Helpers.React
+open Fable.Helpers.React.Props
 
 type Model =
     { x : int }
@@ -29,8 +31,19 @@ let update msg model =
     | Decrement ->
         { model with x = model.x - 1 }, Cmd.ofMsg Increment
 
-let view =
+let view model _ =
+  div [ClassName "container"] [
+        h1 [ClassName "Test"][ str (sprintf "Value: %i" model.x)  ]
+  ]
 
-Program.mkProgram init update (fun model _ -> printf "%A\n" model)
-|> Program.withConsoleTrace
+open Elmish.React
+open Elmish.Debug
+open Elmish.HMR
+
+Program.mkProgram Catalog.State.init Catalog.State.update Catalog.View.view
+#if DEBUG
+|> Program.withDebugger
+|> Program.withHMR
+#endif
+|> Program.withReact "elmish-app"
 |> Program.run
