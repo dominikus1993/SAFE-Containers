@@ -5,6 +5,12 @@ open Fable.Helpers.React.Props
 open Catalog.Types
 open Catalog.State
 
+let product(p: Product) =
+  div [] [
+    div [] [
+    ]
+  ]
+
 let view model dispatch =
   div [ClassName "container"] [
         h1 [ClassName "Test"][ str (sprintf "Value: %A" model.Products)  ]
