@@ -28,5 +28,4 @@ let productComponent(p: Product) =
 let view model dispatch =
   div [ClassName "container"] [
         ul [] (model.Products |> Array.map(fun p ->  li [Key p.id] [ (productComponent p) ]) |> Array.toList)
-        button [ OnClick (fun _ -> dispatch(BrowseProducts(1, 19)))] [ str "Click Me"]
   ]

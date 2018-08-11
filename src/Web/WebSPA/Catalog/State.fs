@@ -6,8 +6,6 @@ open Fable.PowerPack
 open System.Net.Http.Headers
 open Fable.PowerPack.Fetch
 
-let init () : Model * Cmd<Msg> =
-  { Products = [||]; Page = 1; PageSize = 15; ErrorMessage = None; Loading = false }, []
 
 type ProductsQuery = { Page: int; PageSize: int32 }
 
@@ -21,6 +19,9 @@ let getProducts(query: ProductsQuery) =
 
 let getProductsCmd(query: ProductsQuery) =
   Cmd.ofPromise getProducts query FetchedProducts FetchError
+
+let init () : Model * Cmd<Msg> =
+  { Products = [||]; Page = 1; PageSize = 15; ErrorMessage = None; Loading = false }, getProductsCmd { Page = 1; PageSize = 15 }
 
 let update msg model =
   match msg with
