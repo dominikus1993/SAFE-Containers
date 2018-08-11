@@ -7,7 +7,7 @@ open FSharp.Control.Tasks
 open MongoDB.Driver.Linq
 open System.Linq
 
-type BrowseProducts = { skip: int; take: int }
+type BrowseProducts = { skip: int; take: int; sort: string }
 
 type IProductRepository =
     abstract member GetBySlug: slug: string -> Task<Result<Product, exn>>
@@ -19,6 +19,32 @@ type Storage =
 module Product =
   [<Literal>]
   let private ProductsCollectionName = "products"
+
+  let (|Default|PriceAsc|PriceDesc|NameAsc|NameDesc|) (input:string) =
+    match input.ToLower() with
+    | "priceasc" ->
+      PriceAsc
+    | "pricedesc" ->
+      PriceDesc
+    | "nameasc" ->
+      NameAsc
+    | "namedesc" ->
+      NameDesc
+    | _ ->
+      Default
+
+  let addSortQuery input (q: IMongoQueryable<Product>) =
+    match input with
+    | Default ->
+      q.OrderBy(fun x -> x.Id)
+    | PriceAsc ->
+      q.OrderBy(fun x -> x.Price)
+    | PriceDesc ->
+      q.OrderByDescending(fun x -> x.Price)
+    | NameAsc ->
+      q.OrderBy(fun x -> x.Name)
+    | NameDesc ->
+      q.OrderByDescending(fun x -> x.Name)
 
   let storage = function
     | MongoDb db ->
@@ -41,8 +67,9 @@ module Product =
           member __.Get browse =
             task {
               let col = db.GetCollection<Product>(ProductsCollectionName)
+              let mongoQuery = col.AsQueryable() |> addSortQuery browse.sort
               let q = query {
-                for product in col.AsQueryable() do
+                for product in mongoQuery do
                 select product
                 take browse.take
                 skip browse.skip
