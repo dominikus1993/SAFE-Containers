@@ -4,6 +4,7 @@ open Fable.Helpers.React
 open Fable.Helpers.React.Props
 open Catalog.Types
 open Catalog.State
+open Fulma
 
 let product(p: Product) =
   div [] [

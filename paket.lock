@@ -89,6 +89,12 @@ NUGET
     Fulma (1.0.0-beta-026)
       Fable.Core (>= 1.3.12) - restriction: >= netstandard1.6
       Fable.React (>= 3.1) - restriction: >= netstandard1.6
+    Fulma.Elmish (0.1.0-beta-011)
+      Fable.Core (>= 1.3.12) - restriction: >= netstandard1.6
+      Fable.Elmish (>= 1.0.1) - restriction: >= netstandard1.6
+      Fable.PowerPack (>= 1.4) - restriction: >= netstandard1.6
+      Fable.React (>= 3.1) - restriction: >= netstandard1.6
+      Fulma.Extensions (>= 1.0.0-beta-016) - restriction: >= netstandard1.6
     Fulma.Extensions (1.0.0-beta-016)
       Fable.Core (>= 1.3.12) - restriction: >= netstandard1.6
       Fable.React (>= 3.1) - restriction: >= netstandard1.6
