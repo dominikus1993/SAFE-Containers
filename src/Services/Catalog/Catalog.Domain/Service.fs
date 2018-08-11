@@ -6,7 +6,7 @@ open FSharp.Control.Tasks
 open Catalog.Api.Repositories
 
 [<CLIMutable>]
-type GetProducts = { pageSize: int; pageIndex: int; sort: string }
+type GetProducts = { pageSize: int; pageIndex: int; sort: string option }
 
 module Product =
 
@@ -17,5 +17,6 @@ module Product =
 
   let get (f: (BrowseProducts) -> Task<Result<Product seq, exn>> ) (req: GetProducts) =
     task {
-      return! f({ skip = (req.pageIndex - 1) * req.pageSize; take = req.pageSize; sort = req.sort })
+      let sortQ =  defaultArg req.sort "default"
+      return! f({ skip = (req.pageIndex - 1) * req.pageSize; take = req.pageSize; sort = sortQ })
     }
