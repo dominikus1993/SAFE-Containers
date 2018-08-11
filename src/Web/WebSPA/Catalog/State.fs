@@ -5,9 +5,10 @@ open Elmish
 open Fable.PowerPack
 open System.Net.Http.Headers
 open Fable.PowerPack.Fetch
+open Fable.Core
 
-
-type ProductsQuery = { Page: int; PageSize: int32 }
+[<Pojo>]
+type ProductsQuery = { Page: int; PageSize: int; sort: string }
 
 let getProducts(query: ProductsQuery) =
   promise {
@@ -21,12 +22,12 @@ let getProductsCmd(query: ProductsQuery) =
   Cmd.ofPromise getProducts query FetchedProducts FetchError
 
 let init () : Model * Cmd<Msg> =
-  { Products = [||]; Page = 1; PageSize = 15; ErrorMessage = None; Loading = false }, getProductsCmd { Page = 1; PageSize = 15 }
+  { Products = [||]; Page = 1; PageSize = 15; ErrorMessage = None; Loading = false; Sort = "default" }, getProductsCmd { Page = 1; PageSize = 15; sort = "default" }
 
 let update msg model =
   match msg with
-  | BrowseProducts(page, pageSize)->
-    let query: ProductsQuery = { Page = page; PageSize = pageSize }
+  | BrowseProducts(page, pageSize, sort)->
+    let query: ProductsQuery = { Page = page; PageSize = pageSize; sort = sort  }
     { model with Loading = true }, getProductsCmd(query)
   | FetchedProducts(products) ->
     { model with Products = products; Loading = false }, Cmd.none

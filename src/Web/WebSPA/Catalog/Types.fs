@@ -13,9 +13,9 @@ type Product = { id: string;
                  pictureUri: string
                  tags: string array }
 
-type Model = { Products: Product array; Page: int; PageSize: int; ErrorMessage: string option; Loading: bool }
+type Model = { Products: Product array; Page: int; PageSize: int; ErrorMessage: string option; Sort: string; Loading: bool }
 
 type Msg =
-  | BrowseProducts of page: int * pageSize: int
+  | BrowseProducts of page: int * pageSize: int * sort: string
   | FetchedProducts of Product array
   | FetchError of exn

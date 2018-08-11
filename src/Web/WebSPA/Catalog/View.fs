@@ -10,7 +10,7 @@ open Fulma
 let productComponent(p: Product) =
   Card.card [] [
     Card.image [] [
-      Image.image [ Image.Is3by4 ] [
+      Image.image [ Image.Is128x128 ] [
         img [ Src p.pictureUri ]
       ]
     ]
@@ -19,6 +19,9 @@ let productComponent(p: Product) =
         Media.content [][
           Tile.tile [Fulma.Tile.Option.Size Fulma.Tile.Is4] [
             str p.name
+          ]
+          Tile.tile [Fulma.Tile.Option.Size Fulma.Tile.Is6 ] [
+            str (sprintf " %.2f" p.price)
           ]
         ]
       ]
