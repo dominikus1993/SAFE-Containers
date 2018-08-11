@@ -5,15 +5,28 @@ open Fable.Helpers.React.Props
 open Catalog.Types
 open Catalog.State
 open Fulma
+open Fulma
 
-let product(p: Product) =
-  div [] [
-    div [] [
+let productComponent(p: Product) =
+  Card.card [] [
+    Card.image [] [
+      Image.image [ Image.Is3by4 ] [
+        img [ Src p.pictureUri ]
+      ]
+    ]
+    Card.content [] [
+      Media.media [] [
+        Media.content [][
+          Tile.tile [Fulma.Tile.Option.Size Fulma.Tile.Is4] [
+            str p.name
+          ]
+        ]
+      ]
     ]
   ]
 
 let view model dispatch =
   div [ClassName "container"] [
-        h1 [ClassName "Test"][ str (sprintf "Value: %A" model.Products)  ]
+        ul [] (model.Products |> Array.map(fun p ->  li [Key p.id] [ (productComponent p) ]) |> Array.toList)
         button [ OnClick (fun _ -> dispatch(BrowseProducts(1, 19)))] [ str "Click Me"]
   ]
