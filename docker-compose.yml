@@ -36,4 +36,8 @@ services:
     image: mongo
     ports:
       - "27017:27017"
-
+    volumes:
+      - catalog:/data/db
+volumes:
+  catalog:
+    external: true
