@@ -7,7 +7,7 @@ open FSharp.Control.Tasks
 open MongoDB.Driver.Linq
 open System.Linq
 
-type BrowseProducts = { skip: int; take: int; sort: string }
+type BrowseProducts = { skip: int; take: int; sort: string; priceMin: double option; priceMax: double option }
 
 type IProductRepository =
     abstract member GetBySlug: slug: string -> Task<Result<Product, exn>>
@@ -46,6 +46,17 @@ module Product =
     | NameDesc ->
       q.OrderByDescending(fun x -> x.Name)
 
+  let addPriceQuery priceMin priceMax (q: IMongoQueryable<Product>)  =
+    match priceMin, priceMax with
+    | Some(min), Some(max) ->
+      q.Where(fun p -> p.Price >= min && p.Price <= max)
+    | Some(min), None ->
+      q.Where(fun p -> p.Price >= min)
+    | None, Some(max) ->
+      q.Where(fun p -> p.Price <= max)
+    | _ ->
+      q
+
   let storage = function
     | MongoDb db ->
       { new IProductRepository with
@@ -67,7 +78,7 @@ module Product =
           member __.Get browse =
             task {
               let col = db.GetCollection<Product>(ProductsCollectionName)
-              let mongoQuery = col.AsQueryable() |> addSortQuery browse.sort
+              let mongoQuery = col.AsQueryable() |> addSortQuery browse.sort |> addPriceQuery browse.priceMin browse.priceMax
               let q = query {
                 for product in mongoQuery do
                 select product
