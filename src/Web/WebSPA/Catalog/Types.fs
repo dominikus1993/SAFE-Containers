@@ -6,6 +6,7 @@ type ProductDetails = { weight: double; weightUnits: string; manufacturer: strin
 type Product = { id: string;
                  slug: string;
                  name: string;
+                 brand: string;
                  description: string;
                  details: ProductDetails
                  price: double

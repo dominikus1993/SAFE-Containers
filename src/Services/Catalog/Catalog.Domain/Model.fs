@@ -12,6 +12,7 @@ type ProductDetails = { [<BsonElement>]  Weight: double; [<BsonElement>] WeightU
 type Product = { [<BsonId>] [<BsonRepresentation(BsonType.String)>] Id: Guid;
                  [<BsonElement>] Slug: string;
                  [<BsonElement>] Name: string;
+                 [<BsonElement>] Brand: string;
                  [<BsonElement>] Description: string;
                  [<BsonElement>] Details: ProductDetails
                  [<BsonElement>] Price: double // Decimal comparasion in dotnet use string
@@ -23,6 +24,7 @@ with
     { Id = Guid.NewGuid()
       Slug = ""
       Name = ""
+      Brand = ""
       Description = ""
       Details = { Weight = 0.; WeightUnits = ""; Manufacturer = ""; Color = "" }
       Price = 0.

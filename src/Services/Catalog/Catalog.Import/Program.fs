@@ -16,6 +16,7 @@ open MongoDB.Driver
 open MongoDB.Driver
 open Bogus.Bson
 open MongoDB.Driver
+open MongoDB.Driver
 
 let inline (=>) k v = k, box v
 
@@ -36,6 +37,7 @@ let generate (q: int) =
                           { Id = Guid.NewGuid()
                             Slug = f.Lorem.Slug()
                             Name = f.Commerce.ProductName()
+                            Brand = f.Company.CompanyName()
                             Description = f.Commerce.ProductAdjective()
                             Details = { Weight = f.Random.Double(); WeightUnits = "kg"; Manufacturer = f.Company.CompanyName(); Color = f.Internet.Color() }
                             Price = f.Random.Double(1., 1000.)
