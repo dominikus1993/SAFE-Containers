@@ -2,4 +2,4 @@ GET http://localhost:5000/catalog/products/dolores-vel-itaque HTTP/1.1
 
 ###
 
-GET http://localhost:5000/catalog/products?pageSize=15&pageIndex=1&sort=priceAsc&priceMax=55 HTTP/1.1
+GET http://localhost:5000/catalog/products?pageSize=15&pageIndex=1&sort=priceAsc&priceMax=55&name=Intelligent HTTP/1.1

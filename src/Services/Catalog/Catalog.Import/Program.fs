@@ -54,10 +54,12 @@ let main argv =
     if not results.IsUsageRequested then
       let client = MongoClient(results.GetResult(ConnectionString,  defaultValue = "mongodb://127.0.0.1:27017"))
       let db = client.GetDatabase("Catalog")
+      db.DropCollectionAsync("products") |> Async.AwaitTask |> Async.RunSynchronously
       let collection = db.GetCollection<Product>("products")
       let p = generate(results.GetResult(ProductsQuantity, defaultValue = 100))
       collection.InsertManyAsync(p) |> Async.AwaitTask |> Async.RunSynchronously
       collection.Indexes.CreateOneAsync(CreateIndexModel<Product>(IndexKeysDefinition<Product>.op_Implicit(BsonDocument(dict [ "Slug" => 1 ])))) |> Async.AwaitTask |> Async.RunSynchronously |> ignore
+      collection.Indexes.CreateOneAsync(CreateIndexModel<Product>(IndexKeysDefinition<Product>.op_Implicit(BsonDocument(dict [ "Name" => "text" ])))) |> Async.AwaitTask |> Async.RunSynchronously |> ignore
     else
       parser.PrintUsage() |> printfn "%s"
     0 // return an integer exit code
