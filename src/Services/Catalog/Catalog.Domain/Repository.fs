@@ -93,8 +93,8 @@ module Product =
               let q = query {
                 for product in mongoQuery do
                 select product
-                take browse.take
                 skip browse.skip
+                take browse.take
               }
               try
                 let! p = (q :?> IMongoQueryable<Product>).ToListAsync()
