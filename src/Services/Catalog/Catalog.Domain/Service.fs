@@ -28,7 +28,8 @@ module Product =
           sort = sortQ
           priceMin = req.priceMin
           priceMax = req.priceMax
-          name = req.name }
+          name = req.name
+          tags = req.tags }
       let! result = f (browse)
       return result
              |> Result.bind (fun products ->

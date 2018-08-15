@@ -14,7 +14,8 @@ type BrowseProducts =
     sort : string
     priceMin : double option
     priceMax : double option
-    name : string option }
+    name : string option
+    tags: string array option }
 
 type IProductRepository =
   abstract GetBySlug : slug:string -> Task<Result<Product, exn>>
@@ -56,6 +57,13 @@ module Product =
     | None, Some(max) -> q.Where(fun p -> p.Price <= max)
     | _ -> q
 
+  let addTagsQuery (tagsOpt: string array option)(q : IMongoQueryable<Product>) =
+    match tagsOpt with
+    | Some(tags) ->
+      q.Where(fun p -> p.Tags.Any(fun t -> tags.Contains(t)))
+    | None ->
+      q
+
   let storage = function
     | MongoDb db ->
       { new IProductRepository with
@@ -85,6 +93,7 @@ module Product =
                 |> addNameTextQuery browse.name
                 |> addPriceQuery browse.priceMin browse.priceMax
                 |> addSortQuery browse.sort
+                |> addTagsQuery browse.tags
 
               let q =
                 query {
