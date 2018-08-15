@@ -100,7 +100,7 @@ module Product =
               try
                 let p = (q :?> IMongoQueryable<Product>).ToListAsync()
                 let total = mongoQuery.CountAsync()
-                Task.WaitAll(p, total)
+                do! Task.WhenAll(p, total)
                 return Ok({ Products = p.Result.AsEnumerable(); TotalItems = total.Result; TotalPages = Math.Ceiling((total.Result |> float) / (browse.take |> float)) |> int })
               with
               | ex ->
