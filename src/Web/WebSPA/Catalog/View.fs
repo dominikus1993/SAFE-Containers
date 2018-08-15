@@ -30,5 +30,6 @@ let productComponent(p: Product) =
 
 let view model dispatch =
   div [ClassName "container"] [
+        h1 [] [ str (sprintf "TotalPages: %d" model.TotalPages) ]
         ul [] (model.Products |> Array.map(fun p ->  li [Key p.id] [ (productComponent p) ]) |> Array.toList)
   ]

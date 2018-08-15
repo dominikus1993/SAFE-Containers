@@ -15,21 +15,21 @@ let getProducts(query: ProductsQuery) =
     let url = sprintf "%s%s" Urls.CatalogApiUrl (sprintf "products?pageSize=%d&pageIndex=%d" query.PageSize query.Page)
     let props =
       [ RequestProperties.Method HttpMethod.GET ]
-    return! fetchAs<Product array> url props
+    return! fetchAs<ProductData<Product array, PagedMeta>> url props
   }
 
 let getProductsCmd(query: ProductsQuery) =
   Cmd.ofPromise getProducts query FetchedProducts FetchError
 
 let init () : Model * Cmd<Msg> =
-  { Products = [||]; Page = 1; PageSize = 15; ErrorMessage = None; Loading = false; Sort = "default" }, getProductsCmd { Page = 1; PageSize = 15; sort = "default" }
+  { Products = [||]; Page = 1; PageSize = 15; TotalItems = 0; TotalPages = 0; ErrorMessage = None; Loading = false; Sort = "default" }, getProductsCmd { Page = 1; PageSize = 15; sort = "default" }
 
 let update msg model =
   match msg with
-  | BrowseProducts(page, pageSize, sort)->
+  | BrowseProducts(page, pageSize, sort, filters)->
     let query: ProductsQuery = { Page = page; PageSize = pageSize; sort = sort  }
     { model with Loading = true }, getProductsCmd(query)
-  | FetchedProducts(products) ->
-    { model with Products = products; Loading = false }, Cmd.none
+  | FetchedProducts(res) ->
+    { model with Products = res.data; TotalItems = res.metadata.totalItems; Page = res.metadata.page; TotalPages = res.metadata.totalPages; Loading = false }, Cmd.none
   | FetchError err ->
     { model with ErrorMessage = Some(err.Message)}, Cmd.none
