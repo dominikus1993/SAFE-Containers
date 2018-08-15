@@ -1,8 +1,9 @@
 module Catalog.Types
 
 type ProductFilter =
-  | Price of priceMin: decimal * priceMax: decimal
-  | Name of string
+  | PriceMin of priceMin: decimal
+  | PriceMax of priceMax: decimal
+  | Name of name: string
 
 type ProductDetails = { weight: double; weightUnits: string; manufacturer: string; color: string }
 
