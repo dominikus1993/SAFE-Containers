@@ -32,3 +32,9 @@ with
       PictureUri = ""
       Tags = [||]
     }
+
+type PagedProducts = { Products: Product seq; TotalItems: int; TotalPages: int }
+
+type PagedMeta = { Page: int; TotalItems: int; TotalPages: int }
+
+type Data<'a, 'b> = { Data: 'a; Metadata: 'b }

@@ -6,12 +6,13 @@ open MongoDB.Driver
 open FSharp.Control.Tasks
 open MongoDB.Driver.Linq
 open System.Linq
+open System
 
 type BrowseProducts = { skip: int; take: int; sort: string; priceMin: double option; priceMax: double option; name: string option }
 
 type IProductRepository =
     abstract member GetBySlug: slug: string -> Task<Result<Product, exn>>
-    abstract member Get: query:BrowseProducts -> Task<Result<Product seq, exn>>
+    abstract member Browse: query:BrowseProducts -> Task<Result<PagedProducts, exn>>
 
 type Storage =
     | MongoDb of database: IMongoDatabase
@@ -83,7 +84,7 @@ module Product =
               | ex ->
                 return Error(ex)
             }
-          member __.Get browse =
+          member __.Browse browse =
             task {
               let col = db.GetCollection<Product>(ProductsCollectionName)
               let mongoQuery = col.AsQueryable()
@@ -97,8 +98,10 @@ module Product =
                 take browse.take
               }
               try
-                let! p = (q :?> IMongoQueryable<Product>).ToListAsync()
-                return Ok(p.AsEnumerable())
+                let p = (q :?> IMongoQueryable<Product>).ToListAsync()
+                let total = mongoQuery.CountAsync()
+                Task.WaitAll(p, total)
+                return Ok({ Products = p.Result.AsEnumerable(); TotalItems = total.Result; TotalPages = Math.Ceiling((total.Result |> float) / (browse.take |> float)) |> int })
               with
               | ex ->
                 return Error(ex)

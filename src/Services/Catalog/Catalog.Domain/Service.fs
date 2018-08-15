@@ -15,8 +15,10 @@ module Product =
       return! f(slug)
     }
 
-  let get (f: (BrowseProducts) -> Task<Result<Product seq, exn>> ) (req: GetProducts) =
+  let get (f: (BrowseProducts) -> Task<Result<PagedProducts, exn>> ) (req: GetProducts): Task<Result<Data<Product seq, PagedMeta>, exn>> =
     task {
       let sortQ =  defaultArg req.sort "default"
-      return! f({ skip = (req.pageIndex - 1) * req.pageSize; take = req.pageSize; sort = sortQ; priceMin = req.priceMin; priceMax = req.priceMax; name = req.name})
+      let browse = { skip = (req.pageIndex - 1) * req.pageSize; take = req.pageSize; sort = sortQ; priceMin = req.priceMin; priceMax = req.priceMax; name = req.name}
+      let! result =  f(browse)
+      return result |> Result.bind(fun products -> Ok({ Data = products.Products; Metadata = { Page = req.pageIndex; TotalItems = products.TotalItems; TotalPages = products.TotalPages}}))
     }
