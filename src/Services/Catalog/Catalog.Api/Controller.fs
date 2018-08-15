@@ -19,8 +19,7 @@ module Products =
     fun (ctx : HttpContext) slug ->
       task {
         let repo = ctx.GetService<IProductRepository>()
-        let! result = Product.getBySlug (repo.GetBySlug) slug
-        match result with
+        match! Product.getBySlug (repo.GetBySlug) slug with
         | Ok (data) ->
            return! Response.ok ctx data
         | Error er ->
@@ -32,8 +31,7 @@ module Products =
       task {
         let repo = ctx.GetService<IProductRepository>()
         let queryS = Controller.getQuery<GetProducts> ctx
-        let! result = Product.get (repo.Get) queryS
-        match result with
+        match! Product.get (repo.Get) queryS with
         | Ok (data) ->
            return! Response.ok ctx data
         | Error er ->
