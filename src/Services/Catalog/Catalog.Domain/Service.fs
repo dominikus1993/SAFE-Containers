@@ -7,13 +7,13 @@ open Catalog.Api.Repositories
 
 [<CLIMutable>]
 type GetProducts =
-  { pageSize : int
-    pageIndex : int
+  { pageSize : int option
+    pageIndex : int option
     sort : string option
     priceMin : double option
     priceMax : double option
     name : string option
-    tags : string array option }
+    tags : string option }
 
 module Product =
   let getBySlug (f : string -> Task<Result<Product, exn>>) slug = task { return! f (slug) }
@@ -21,21 +21,23 @@ module Product =
   let get (f : BrowseProducts -> Task<Result<PagedProducts, exn>>) (req : GetProducts) : Task<Result<Data<Product seq, PagedMeta>, exn>> =
     task {
       let sortQ = defaultArg req.sort "default"
-
+      let tagsArray = req.tags |> Option.bind(fun tags -> match tags.Split([|','|]) with | [||] -> None | tags -> Some(tags))
+      let pageIndex = defaultArg req.pageIndex 1
+      let pageSize = defaultArg req.pageSize 15
       let browse =
-        { skip = (req.pageIndex - 1) * req.pageSize
-          take = req.pageSize
+        { skip = (pageIndex - 1) * pageSize
+          take = pageSize
           sort = sortQ
           priceMin = req.priceMin
           priceMax = req.priceMax
           name = req.name
-          tags = req.tags }
+          tags = tagsArray }
       let! result = f (browse)
       return result
              |> Result.bind (fun products ->
                   Ok({ Data = products.Products
                        Metadata =
-                         { Page = req.pageIndex
+                         { Page = pageIndex
                            TotalItems = products.TotalItems
                            TotalPages = products.TotalPages } }))
     }

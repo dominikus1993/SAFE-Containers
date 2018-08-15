@@ -31,6 +31,7 @@ module Products =
       task {
         let repo = ctx.GetService<IProductRepository>()
         let queryS = Controller.getQuery<GetProducts> ctx
+        printfn "%A" queryS
         match! Product.get (repo.Browse) queryS with
         | Ok (data) ->
            return! Response.ok ctx data
