@@ -10,6 +10,20 @@ open System.Threading.Tasks
 [<Tests>]
 let tests =
   testList "Services" [
+    testList "Tags" [
+      testList "all" [
+        testCaseAsync "test when OK" <| async {
+          let f() = async { return Ok( seq { yield { name = "Test"; quantity = 1 } }) } |> Async.StartAsTask
+          let! subject = Tags.all f |> Async.AwaitTask
+          Expect.isOk subject "should be Ok"
+        }
+        testCaseAsync "test when Error" <| async {
+          let f() = async { return Error(Exception("Test"))} |> Async.StartAsTask
+          let! subject = Tags.all f |> Async.AwaitTask
+          Expect.isError subject "should be Error"
+        }
+      ]
+    ]
     testList "Product" [
       testList "getBySlug" [
         testCaseAsync "test when OK" <| async {
@@ -65,7 +79,7 @@ let tests =
               return Error(Exception("Test"))
             } |> Async.StartAsTask
           let! subject = Product.get f ({ pageSize = None; pageIndex = None; sort = None; priceMin = None; priceMax = None; name = None; tags = None }) |> Async.AwaitTask
-          Expect.isError subject "result should be ok"
+          Expect.isError subject "result should be error"
         }
       ]
     ]
