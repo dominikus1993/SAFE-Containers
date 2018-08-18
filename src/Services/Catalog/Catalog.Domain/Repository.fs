@@ -7,6 +7,8 @@ open FSharp.Control.Tasks
 open MongoDB.Driver.Linq
 open System.Linq
 open System
+open MongoDB.Driver
+open MongoDB.Driver
 
 type BrowseProducts =
   { skip : int
@@ -21,7 +23,33 @@ type IProductRepository =
   abstract GetBySlug : slug:string -> Task<Result<Product, exn>>
   abstract Browse : query:BrowseProducts -> Task<Result<PagedProducts, exn>>
 
+type ITagsRepository =
+  abstract All : unit-> Task<Result<Catalog.Api.Model.Tag seq, exn>>
+
 type Storage = MongoDb of database : IMongoDatabase
+
+
+module Tags =
+  [<Literal>]
+  let private ProductsCollectionName = "products"
+
+  let storage = function
+    | MongoDb db ->
+      { new ITagsRepository with
+        member __.All() =
+          task {
+              let col =
+                db.GetCollection<Product>(ProductsCollectionName)
+              let q = col.AsQueryable()
+                        .SelectMany(fun x -> x.Tags)
+                        .GroupBy(fun x -> x)
+                        .Select(fun x -> { name = x.Key; quantity = x.Count() } )
+                        .OrderBy(fun x -> x.name )
+              try
+                let! p = q.ToListAsync()
+                return Ok(p.AsEnumerable())
+              with ex -> return Error(ex)
+          }}
 
 module Product =
   [<Literal>]

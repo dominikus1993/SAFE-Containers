@@ -15,6 +15,10 @@ type GetProducts =
     name : string option
     tags : string option }
 
+module Tags =
+  let all (f : unit -> Task<Result<Tag seq, exn>>) : Task<Result<Tag seq, exn>> =
+     task { return! f () }
+
 module Product =
   let getBySlug (f : string -> Task<Result<Product, exn>>) slug = task { return! f (slug) }
 

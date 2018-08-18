@@ -37,7 +37,7 @@ type Product =
     [<BsonElement>]
     PictureUri : string
     [<BsonElement>]
-    Tags : string array }
+    Tags : string seq }
   static member Zero() =
     { Id = Guid.NewGuid()
       Slug = ""
@@ -63,6 +63,10 @@ type PagedMeta =
   { Page : int
     TotalItems : int
     TotalPages : int }
+
+type Tag =
+  { name: string
+    quantity: int }
 
 type Data<'a, 'b> =
   { Data : 'a

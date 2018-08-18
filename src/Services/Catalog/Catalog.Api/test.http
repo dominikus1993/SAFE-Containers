@@ -8,3 +8,7 @@ GET http://localhost:5000/catalog/products?pageSize=15&pageIndex=1&sort=priceAsc
 ###
 
 GET http://localhost:8085/products?pageSize=15&pageIndex=1&sort=priceAsc&priceMax=55&tags=nostrum HTTP/1.1
+
+###
+
+GET http://localhost:8085/tags HTTP/1.1

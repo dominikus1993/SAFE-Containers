@@ -12,12 +12,16 @@ let configureServices (services : IServiceCollection) =
     services.AddTransient<IProductRepository>(fun provider ->
                                                     Product.storage(MongoDb(provider.GetService<IMongoClient>().GetDatabase("Catalog")))
                                             ) |> ignore
+    services.AddTransient<ITagsRepository>(fun provider ->
+                                                    Tags.storage(MongoDb(provider.GetService<IMongoClient>().GetDatabase("Catalog")))
+                                            ) |> ignore
     services
 
 
 
 let topRouter = router {
     forward "/products" Products.controller
+    forward "/tags" Tags.controller
 }
 
 let corsPolicy (config: CorsPolicyBuilder) =
