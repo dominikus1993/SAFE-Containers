@@ -10,6 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Akkling" Version="0.9.3" />
     <PackageReference Include="Argu" Version="5.1.0" />
     <PackageReference Include="Bogus" Version="22.3.*" />
     <PackageReference Include="FSharp.Core" Version="4.5.*" />
