@@ -14,6 +14,7 @@ open Akka.Configuration
 open System.Threading
 open Akka.Streams.Dsl
 open Akka.Streams.Implementation.Fusing
+open Akka.Actor
 
 let inline (=>) k v = k, box v
 
@@ -49,11 +50,21 @@ type ProductCollectionActorMsg =
   | Status of msg: string
   | DropCollection
   | CreateIndexes
+  | Check of initialProductsQ: int
 
 let ProductCollectionActor (client: MongoClient) (mailbox: Actor<ProductCollectionActorMsg>) =
   let rec loop() =
     actor {
       match! mailbox.Receive() with
+      | Check q ->
+        mailbox.Self <! Status "Check"
+        let db = client.GetDatabase("Catalog")
+        let collection = db.GetCollection<Product>("products")
+        let count = collection.CountDocuments(Builders<Product>.Filter.Empty)
+        if count = 0L then
+          mailbox.Self <! GenerateAndStore q
+        mailbox.Context.System.Scheduler.ScheduleTellRepeatedly(TimeSpan.FromMinutes(1.), TimeSpan.FromMinutes(1.), mailbox.Self, Check(q), ActorRefs.NoSender)
+        return! loop()
       | Status msg ->
         mailbox.Log.Value.Info(sprintf "Status(%A)" msg )
         return! loop()
@@ -61,16 +72,18 @@ let ProductCollectionActor (client: MongoClient) (mailbox: Actor<ProductCollecti
         mailbox.Self <! Status "Start Generation"
         mailbox.Self <! DropCollection
         let p = generate(q)
-        mailbox.Self <! Store(p)
+        let products = p |> Seq.chunkBySize 500
+        for ps in products do
+          mailbox.Self <! Store(ps)
+        mailbox.Self <! CreateIndexes
         return! loop()
       | Store p ->
         let db = client.GetDatabase("Catalog")
         let collection = db.GetCollection<Product>("products")
         async {
-          mailbox.Self <! Status "Store Start"
+          mailbox.Self <! Status "Store Products Start"
           do! collection.InsertManyAsync(p) |> Async.AwaitTask
-          mailbox.Self <! Status "Products Stored"
-          return CreateIndexes
+          return Status "Products Stored"
         } |!> mailbox.Self
         return! loop()
       | CreateIndexes ->
@@ -102,7 +115,7 @@ let main argv =
       let system = ConfigurationFactory.Default() |> System.create "CatalogImport"
       let client = MongoClient(results.GetResult(ConnectionString,  defaultValue = "mongodb://127.0.0.1:27017"))
       let actor = spawn system "products" (ProductCollectionActor client)
-      actor <! GenerateAndStore(results.GetResult(ProductsQuantity, defaultValue = 100))
+      actor <! Check(results.GetResult(ProductsQuantity, defaultValue = 100))
       Console.ReadLine() |> ignore
     else
       parser.PrintUsage() |> printfn "%s"
