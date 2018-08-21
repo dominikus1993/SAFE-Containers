@@ -15,4 +15,4 @@ RUN dotnet publish --no-restore -c Release -o /app
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app .
-ENTRYPOINT ["dotnet", "Catalog.Import.dll", "-q 10000"]
+ENTRYPOINT ["dotnet", "Catalog.Import.dll", "-q ${DEFAULT_PRODUCT_QUANTITY} -c ${MONGO_CONNECTION_STRING}"]

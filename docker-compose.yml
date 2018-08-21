@@ -22,6 +22,16 @@ services:
       - PATH_BASE=/catalog
     depends_on:
       - catalog.data
+  catalog.import:
+    image: safe_shop/catalog.import:${TAG:-latest}
+    build:
+      context: .
+      dockerfile: src/Services/Catalog/Catalog.Import/Dockerfile
+    environment:
+      - DEFAULT_PRODUCT_QUANTITY=10000
+      - MONGO_CONNECTION_STRING=mongodb://catalog.data:27017
+    depends_on:
+      - catalog.data
   shopping.apigw:
     image: safe_shop/shopping.apigw:${TAG:-latest}
     build:
