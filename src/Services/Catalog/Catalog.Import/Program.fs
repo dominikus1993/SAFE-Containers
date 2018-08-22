@@ -1,7 +1,6 @@
 ﻿// Learn more about F# at http://fsharp.org
 
 open System
-open Argu
 open Bogus
 open Catalog.Api.Model
 open MongoDB.Driver
@@ -15,18 +14,9 @@ open System.Threading
 open Akka.Streams.Dsl
 open Akka.Streams.Implementation.Fusing
 open Akka.Actor
+open Microsoft.Extensions.Hosting
 
 let inline (=>) k v = k, box v
-
-type Arguments =
-    | [<AltCommandLine("-c")>] ConnectionString of connstr:string
-    | [<AltCommandLine("-q")>] ProductsQuantity of q:int
-with
-    interface IArgParserTemplate with
-        member s.Usage =
-            match s with
-            | ProductsQuantity _ -> "Specify a products quantity to generation"
-            | ConnectionString _ -> "Specify a mongodb connectionstring."
 
 let generate (q: int) =
   let f = Faker<Product>()
@@ -109,14 +99,10 @@ let ProductCollectionActor (client: MongoClient) (mailbox: Actor<ProductCollecti
 
 [<EntryPoint>]
 let main argv =
-    let parser = ArgumentParser.Create<Arguments>(programName = "Catalog.Import")
-    let results = parser.Parse(argv, raiseOnUsage = false, ignoreUnrecognized = true)
-    if not results.IsUsageRequested then
-      let system = ConfigurationFactory.Default() |> System.create "CatalogImport"
-      let client = MongoClient(results.GetResult(ConnectionString,  defaultValue = "mongodb://127.0.0.1:27017"))
-      let actor = spawn system "products" (ProductCollectionActor client)
-      actor <! Check(results.GetResult(ProductsQuantity, defaultValue = 100))
-      Console.ReadLine() |> ignore
-    else
-      parser.PrintUsage() |> printfn "%s"
+    let host = HostBuilder().Build()
+    let system = ConfigurationFactory.Default() |> System.create "CatalogImport"
+    let client = MongoClient("")
+    let actor = spawn system "products" (ProductCollectionActor client)
+    actor <! Check(212)
+    host.RunAsync() |> Async.AwaitTask |> Async.RunSynchronously
     0 // return an integer exit code
