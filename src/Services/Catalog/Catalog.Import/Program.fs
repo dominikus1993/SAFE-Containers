@@ -15,8 +15,17 @@ open Akka.Streams.Dsl
 open Akka.Streams.Implementation.Fusing
 open Akka.Actor
 open Microsoft.Extensions.Hosting
+open Microsoft.Extensions.Configuration
+open Microsoft.Extensions.DependencyInjection
+open Akka.Configuration
+open System.Configuration
+open Microsoft.Extensions.Options
+open System.Threading.Tasks
 
 let inline (=>) k v = k, box v
+
+[<CLIMutable>]
+type Config = { Quantity: int; ConnectionString: string; Interval: int }
 
 let generate (q: int) =
   let f = Faker<Product>()
@@ -97,16 +106,31 @@ let ProductCollectionActor (client: MongoClient) (mailbox: Actor<ProductCollecti
     }
   loop()
 
+
+type ActorService(client: MongoClient, system: ActorSystem, config: IOptions<Config>) =
+  interface IHostedService with
+    member this.StartAsync(cancellationToken) =
+        let actor = spawn system "products" (ProductCollectionActor client)
+        actor <! Check(config.Value.Quantity)
+        Task.CompletedTask
+    member this.StopAsync(cancellationToken) =
+      Task.CompletedTask
+
 [<EntryPoint>]
 let main argv =
     let builder = HostBuilder()
-    builder.ConfigureAppConfiguration(fun context config ->
-                                        config.Add
+                    .ConfigureAppConfiguration(fun context config ->
+                                        config.AddJsonFile("appsettings.json", optional = true) |> ignore
+                                        config.AddEnvironmentVariables() |> ignore
+                                        if argv |> isNull |> not then
+                                          config.AddCommandLine(argv) |> ignore
                                       )
-    let host = HostBuilder().Build()
-    let system = ConfigurationFactory.Default() |> System.create "CatalogImport"
-    let client = MongoClient("")
-    let actor = spawn system "products" (ProductCollectionActor client)
-    actor <! Check(212)
+                    .ConfigureServices(fun ct services ->
+                                          services.AddOptions() |> ignore
+                                          services.Configure<Config>(ct.Configuration.GetSection("Service")) |> ignore
+                                          services.AddSingleton<MongoClient>(fun _ -> MongoClient(ct.Configuration.["Service:ConnectionString"])) |> ignore
+                                          services.AddSingleton<ActorSystem>(fun _ -> ConfigurationFactory.Default() |> System.create "CatalogImport") |> ignore
+                                        )
+    let host = builder.Build()
     host.RunAsync() |> Async.AwaitTask |> Async.RunSynchronously
     0 // return an integer exit code
