@@ -108,11 +108,11 @@ let ProductCollectionActor (client: MongoClient) (mailbox: Actor<ProductCollecti
 
 
 type ActorService(client: MongoClient, system: ActorSystem, config: IOptions<Config>) =
+  let actor = spawn system "products" (ProductCollectionActor client)
   interface IHostedService with
     member this.StartAsync(cancellationToken) =
-        let actor = spawn system "products" (ProductCollectionActor client)
-        actor <! Check(config.Value.Quantity)
-        Task.CompletedTask
+      actor <! Check(config.Value.Quantity)
+      Task.CompletedTask
     member this.StopAsync(cancellationToken) =
       Task.CompletedTask
 

@@ -28,8 +28,8 @@ services:
       context: .
       dockerfile: src/Services/Catalog/Catalog.Import/Dockerfile
     environment:
-      - DEFAULT_PRODUCT_QUANTITY=10000
-      - MONGO_CONNECTION_STRING=mongodb://catalog.data:27017
+      - Service_Quantity=10000
+      - Service_ConnectionString=mongodb://catalog.data:27017
     depends_on:
       - catalog.data
   shopping.apigw:
