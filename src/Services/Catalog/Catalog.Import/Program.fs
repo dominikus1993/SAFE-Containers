@@ -99,6 +99,10 @@ let ProductCollectionActor (client: MongoClient) (mailbox: Actor<ProductCollecti
 
 [<EntryPoint>]
 let main argv =
+    let builder = HostBuilder()
+    builder.ConfigureAppConfiguration(fun context config ->
+                                        config.Add
+                                      )
     let host = HostBuilder().Build()
     let system = ConfigurationFactory.Default() |> System.create "CatalogImport"
     let client = MongoClient("")
