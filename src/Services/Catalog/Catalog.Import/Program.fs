@@ -130,6 +130,7 @@ let main argv =
                                           services.Configure<Config>(ct.Configuration.GetSection("Service")) |> ignore
                                           services.AddSingleton<MongoClient>(fun _ -> MongoClient(ct.Configuration.["Service:ConnectionString"])) |> ignore
                                           services.AddSingleton<ActorSystem>(fun _ -> ConfigurationFactory.Default() |> System.create "CatalogImport") |> ignore
+                                          services.AddSingleton<IHostedService, ActorService>() |> ignore
                                         )
     let host = builder.Build()
     host.RunAsync() |> Async.AwaitTask |> Async.RunSynchronously
