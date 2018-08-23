@@ -21,6 +21,7 @@ open Akka.Configuration
 open System.Configuration
 open Microsoft.Extensions.Options
 open System.Threading.Tasks
+open Microsoft.Extensions.Logging
 
 let inline (=>) k v = k, box v
 
@@ -132,6 +133,10 @@ let main argv =
                                           services.AddSingleton<ActorSystem>(fun _ -> ConfigurationFactory.Default() |> System.create "CatalogImport") |> ignore
                                           services.AddSingleton<IHostedService, ActorService>() |> ignore
                                         )
+                    .ConfigureLogging(fun ctx logging ->
+                                        logging.AddConfiguration(ctx.Configuration.GetSection("Logging")) |> ignore
+                                        logging.AddConsole() |> ignore
+                                     )
     let host = builder.Build()
     host.RunAsync() |> Async.AwaitTask |> Async.RunSynchronously
     0 // return an integer exit code
