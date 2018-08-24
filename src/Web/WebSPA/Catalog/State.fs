@@ -67,7 +67,7 @@ let init() : Model * Cmd<Msg> =
     TotalItems = 0
     TotalPages = 0
     ErrorMessage = None
-    Loading = false
+    Loading = true
     Sort = "default" },
    initCmd()
 
