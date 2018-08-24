@@ -48,6 +48,15 @@ services:
       - "27017:27017"
     volumes:
       - catalog:/data/db
+  portainer:
+    image: portainer/portainer
+    ports:
+      - "9000:9000"
+    volumes:
+        - "portainer:/data"
+        - "/var/run/docker.sock:/var/run/docker.sock"
 volumes:
   catalog:
+    external: true
+  portainer:
     external: true
