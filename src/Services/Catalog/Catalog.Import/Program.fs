@@ -37,7 +37,7 @@ let generate (q: int) =
                             Brand = f.Company.CompanyName()
                             Description = f.Commerce.ProductAdjective()
                             Details = { Weight = f.Random.Double(); WeightUnits = "kg"; Manufacturer = f.Company.CompanyName(); Color = f.Internet.Color() }
-                            Price = f.Random.Double(1., 1000.)
+                            Price = Math.Round(f.Random.Double(1., 1000.), 2)
                             AvailableStock = f.Random.Number()
                             PictureUri = f.Image.Food()
                             Tags = [| f.Lorem.Word(); f.Lorem.Word(); f.Lorem.Word();|]}
