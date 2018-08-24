@@ -23,8 +23,13 @@ type Product =
     pictureUri : string
     tags : string array }
 
+type Tag =
+  { name: string
+    quantity: int }
+
 type Model =
   { Products : Product array
+    Tags: Tag array
     Page : int
     PageSize : int
     TotalItems : int
@@ -47,7 +52,10 @@ type ProductData<'a, 'b> =
   { data : 'a
     metadata : 'b }
 
+
 type Msg =
   | BrowseProducts of page : int * pageSize : int * sort : string * filters : ProductFilter array
+  | GetTags
+  | FetchedTags of Tag array
   | FetchedProducts of ProductData<Product array, PagedMeta>
   | FetchError of exn

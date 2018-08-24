@@ -7,6 +7,8 @@ open Catalog.State
 open Fulma
 open Fulma
 
+let tagListComponent (tags: Tag seq) = 2
+
 let productComponent(p: Product) =
   Card.card [] [
     Card.image [] [

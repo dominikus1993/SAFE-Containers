@@ -36,10 +36,32 @@ let getProducts (query : ProductsQuery) =
     return! fetchAs<ProductData<Product array, PagedMeta>> url props
   }
 
+
 let getProductsCmd (query : ProductsQuery) = Cmd.ofPromise getProducts query FetchedProducts FetchError
+
+let getTags () =
+  promise {
+    let url =
+      sprintf "%s%s" Urls.CatalogApiUrl
+        (sprintf "tags")
+    let props = [ RequestProperties.Method HttpMethod.GET ]
+    return! fetchAs<Tag array> url props
+  }
+
+
+let getTagsCmd () = Cmd.ofPromise getTags () FetchedTags FetchError
+
+let initCmd (): Cmd<Msg> =
+  let getproducts = getProductsCmd { page = 1
+                                     pageSize = 15
+                                     sort = "priceAsc"
+                                     filters = [| PriceMin(15m) |] }
+  let getTags = getTagsCmd()
+  Cmd.batch [getproducts; getTags]
 
 let init() : Model * Cmd<Msg> =
   { Products = [||]
+    Tags = [||]
     Page = 1
     PageSize = 15
     TotalItems = 0
@@ -47,10 +69,7 @@ let init() : Model * Cmd<Msg> =
     ErrorMessage = None
     Loading = false
     Sort = "default" },
-  getProductsCmd { page = 1
-                   pageSize = 15
-                   sort = "priceAsc"
-                   filters = [| PriceMin(15m) |] }
+   initCmd()
 
 let update msg model =
   match msg with
@@ -61,6 +80,10 @@ let update msg model =
         sort = sort
         filters = filters }
     { model with Loading = true }, getProductsCmd (query)
+  | GetTags ->
+      { model with Loading = true }, getTagsCmd ()
+  | FetchedTags tags ->
+    { model with Tags = tags; Loading = false}, Cmd.none
   | FetchedProducts(res) ->
     { model with Products = res.data
                  TotalItems = res.metadata.totalItems
