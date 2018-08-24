@@ -5,9 +5,22 @@ open Fable.Helpers.React.Props
 open Catalog.Types
 open Catalog.State
 open Fulma
-open Fulma
 
-let tagListComponent (tags: Tag seq) = 2
+let tagComponent(tag: Tag) =
+    Label.label [] [
+      Checkbox.checkbox [] [
+        Checkbox.input []
+        str (sprintf "%s(%d)" tag.name tag.quantity)
+      ]
+    ]
+
+let tagListComponent (tags: Tag array) =
+  Field.div [] [
+    ul [] (tags |> Array.map(fun tag -> li [Key tag.name] [ tagComponent tag ] ) |> Array.toList)
+  ]
+
+let productTagsComponent (tags: string array) =
+  Tag.list [] (tags |> Array.map(fun tag -> Tag.tag [] [ str tag ] ) |> Array.toList )
 
 let productComponent(p: Product) =
   Card.card [] [
@@ -25,6 +38,7 @@ let productComponent(p: Product) =
           Tile.tile [Fulma.Tile.Option.Size Fulma.Tile.Is6 ] [
             str (sprintf " %.2f" p.price)
           ]
+          p.tags |> productTagsComponent
         ]
       ]
     ]
@@ -34,4 +48,6 @@ let view model dispatch =
   div [ClassName "container"] [
         h1 [] [ str (sprintf "TotalPages: %d" model.TotalPages) ]
         ul [] (model.Products |> Array.map(fun p ->  li [Key p.id] [ (productComponent p) ]) |> Array.toList)
+        tagListComponent(model.Tags)
   ]
+
