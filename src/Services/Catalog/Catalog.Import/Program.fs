@@ -63,7 +63,6 @@ let ProductCollectionActor (client: MongoClient) (mailbox: Actor<ProductCollecti
         let count = collection.CountDocuments(Builders<Product>.Filter.Empty)
         if count = 0L then
           mailbox.Self <! GenerateAndStore q
-        mailbox.Context.System.Scheduler.ScheduleTellRepeatedly(TimeSpan.FromMinutes(1.), TimeSpan.FromMinutes(1.), mailbox.Self, Check(q), ActorRefs.NoSender)
         return! loop()
       | Status msg ->
         mailbox.Log.Value.Info(sprintf "Status(%A)" msg )
@@ -112,7 +111,7 @@ type ActorService(client: MongoClient, system: ActorSystem, config: IOptions<Con
   let actor = spawn system "products" (ProductCollectionActor client)
   interface IHostedService with
     member this.StartAsync(cancellationToken) =
-      actor <! Check(config.Value.Quantity)
+      system.Scheduler.ScheduleTellRepeatedly(TimeSpan.FromMinutes(1.), TimeSpan.FromMinutes(1.), actor, Check(config.Value.Quantity), ActorRefs.NoSender)
       Task.CompletedTask
     member this.StopAsync(cancellationToken) =
       Task.CompletedTask
