@@ -14,18 +14,28 @@ open Fake.JavaScript
 let dockerUser = Environment.environVar "DockerUser"
 let dockerPassword = Environment.environVar "DockerPassword"
 
-let runDockerComposeUp file =
+let runDockerCompose file operation =
   let result =
       Process.execSimple (fun info ->
           { info with
               FileName = "docker-compose"
               UseShellExecute = false
-              Arguments = sprintf "-f %s up -d --build" file }
+              Arguments = sprintf "-f %s %s" file operation }
       ) TimeSpan.MaxValue
   if result <> 0 then failwith "Docker build failed"
 
-Target.create "DockerComposeBuild:Dev" (fun _ ->
+let runDockerComposeUp file =
+  runDockerCompose file "up -d --build"
+
+let runDockerComposeBuild file =
+  runDockerCompose file "build"
+
+Target.create "DockerComposeUp:Dev" (fun _ ->
     runDockerComposeUp "../docker-compose.yml"
+)
+
+Target.create "DockerComposeBuild:Dev" (fun _ ->
+    runDockerComposeBuild "../docker-compose.yml"
 )
 
 Target.create "Fable:Start" (fun _ ->
@@ -35,9 +45,10 @@ Target.create "Fable:Start" (fun _ ->
 
 Target.create "All" ignore
 
-"DockerComposeBuild:Dev"
+"DockerComposeUp:Dev"
   ==> "Fable:Start"
   ==> "All"
 
+"DockerComposeBuild:Dev"
 
 Target.runOrDefault "All"
