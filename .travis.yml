@@ -1,0 +1,19 @@
+language: csharp
+dist: trusty
+sudo: required
+mono: none
+dotnet: 2.1.401
+branches:
+  only:
+    - master
+    - develop
+before_script:
+  - chmod -R a+x scripts
+script:
+  - cd ./scripts
+  - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then ./fake.sh run ./build.fsx -t DockerComposeBuild:Dev; fi'
+  - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then ./fake.sh run ./build.fsx -t DockerComposeBuild:Dev; fi'
+notifications:
+  email:
+    on_success: never
+on_failure: always
