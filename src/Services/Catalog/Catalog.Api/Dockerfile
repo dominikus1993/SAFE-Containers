@@ -15,6 +15,7 @@ RUN dotnet restore -nowarn:msb3202,nu1503
 RUN dotnet test
 
 FROM build AS publish
+WORKDIR /src/src/Services/Catalog/Catalog.Api
 RUN dotnet publish --no-restore -c Release -o /app
 
 FROM base AS final
