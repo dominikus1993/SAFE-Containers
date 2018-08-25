@@ -10,7 +10,7 @@ branches:
 before_script:
   - chmod -R a+x build
 script:
-  - cd ./scripts
+  - cd ./build
   - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then ./fake.sh run ./build.fsx -t DockerComposeBuild:Dev; fi'
   - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then ./fake.sh run ./build.fsx -t DockerComposeBuild:Dev; fi'
 notifications:
