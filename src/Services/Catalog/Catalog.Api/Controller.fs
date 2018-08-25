@@ -3,37 +3,45 @@ open Saturn
 open FSharp.Control.Tasks
 open Microsoft.AspNetCore.Http
 open Giraffe
-open Microsoft.Extensions.Options
-open Saturn.ControllerHelpers
-open Saturn
-open MongoDB.Driver
 open Catalog.Api.Services
 open Catalog.Api.Model
 open Catalog.Api.Repositories
-open Microsoft.AspNetCore.Mvc
 
-
-module Products =
-
-  let showAction =
-    fun (ctx : HttpContext) slug ->
+module Tags =
+  let private indexAction =
+    fun (ctx : HttpContext) ->
       task {
-        let repo = ctx.GetService<IProductRepository>()
-        let! result = Product.getBySlug (repo.GetBySlug) slug
-        match result with
+        let repo = ctx.GetService<ITagsRepository>()
+        match! Tags.all (repo.All) with
         | Ok (data) ->
            return! Response.ok ctx data
         | Error er ->
           return! Response.notFound ctx er.Message
       }
 
-  let indexAction =
+  let controller = controller {
+    index indexAction
+  }
+
+module Products =
+
+  let private showAction =
+    fun (ctx : HttpContext) slug ->
+      task {
+        let repo = ctx.GetService<IProductRepository>()
+        match! Product.getBySlug (repo.GetBySlug) slug with
+        | Ok (data) ->
+           return! Response.ok ctx data
+        | Error er ->
+          return! Response.notFound ctx er.Message
+      }
+
+  let private indexAction =
     fun (ctx : HttpContext) ->
       task {
         let repo = ctx.GetService<IProductRepository>()
         let queryS = Controller.getQuery<GetProducts> ctx
-        let! result = Product.get (repo.Get) queryS
-        match result with
+        match! Product.get (repo.Browse) queryS with
         | Ok (data) ->
            return! Response.ok ctx data
         | Error er ->

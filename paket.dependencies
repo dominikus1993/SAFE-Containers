@@ -3,6 +3,9 @@ storage:none
 
 nuget FSharp.Core redirects: force
 
+nuget Fulma
+nuget Fulma.Extensions
+nuget Fulma.Elmish
 nuget Fable.Core
 nuget Fable.React
 nuget Fable.Elmish

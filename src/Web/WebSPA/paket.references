@@ -1,4 +1,7 @@
 FSharp.Core
+Fulma
+Fulma.Extensions
+Fulma.Elmish
 Fable.React
 Fable.Elmish.Browser
 Fable.Elmish.Debugger
