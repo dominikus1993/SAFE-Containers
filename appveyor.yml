@@ -1,0 +1,18 @@
+version: '1.0.{build}'
+image: Visual Studio 2017
+branches:
+  only:
+  - master
+init:
+  - cmd: git config --global core.autocrlf true
+before_build:
+  - cmd: dotnet --version
+  - cmd: dotnet restore ./SAFE-Containers.sln --verbosity m
+build_script:
+  - cmd: dotnet build ./SAFE-Containers.sln
+clone_depth: 1
+test_script:
+  - cmd: dotnet restore ./SAFE-Containers.sln --verbosity m
+  - cmd: cd src/Services/Catalog/Catalog.UnitTests
+  - cmd: dotnet test
+deploy: off

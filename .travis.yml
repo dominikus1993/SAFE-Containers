@@ -8,7 +8,7 @@ branches:
     - master
     - develop
 before_script:
-  - chmod -R a+x scripts
+  - chmod -R a+x build
 script:
   - cd ./scripts
   - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then ./fake.sh run ./build.fsx -t DockerComposeBuild:Dev; fi'
