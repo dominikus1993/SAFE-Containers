@@ -15,4 +15,6 @@ module Aggregates =
   open Values
   open Entities
 
-  type CustomerBasket = { Id: Id; Items: CustomerBasketItem list; History: History }
+  type CustomerBasket = { Id: Id; Items: CustomerBasketItem list; History: History } with
+    member this.AddItem(item: CustomerBasketItem) =
+      this
