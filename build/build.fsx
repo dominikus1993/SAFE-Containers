@@ -17,7 +17,7 @@ let dockerUser = Environment.environVar "DockerUser"
 let dockerPassword = Environment.environVar "DockerPassword"
 let solution = "../SAFE-Containers.sln"
 
-let testProjects = [ "../src/Services/Catalog/Catalog.UnitTests/Catalog.UnitTests.fsproj" ]
+let testProjects = [ "../src/Services/Catalog/Catalog.UnitTests/Catalog.UnitTests.fsproj";  "../src/Services/Basket/Basket.UnitTests/Basket.UnitTests.fsproj"]
 let runDockerCompose file operation =
   let result =
       Process.execSimple (fun info ->
