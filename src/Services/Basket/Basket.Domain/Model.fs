@@ -4,6 +4,7 @@ open System
 module Values =
 
   type Id = Guid
+  type History = { CreationTime: DateTime; LastUpdate: DateTime }
 
 module Entities =
   open Values
@@ -14,4 +15,4 @@ module Aggregates =
   open Values
   open Entities
 
-  type CustomerBasket = { Id: Id; Items: CustomerBasketItem list; LastUpdate: DateTime; CreationTime: DateTime }
+  type CustomerBasket = { Id: Id; Items: CustomerBasketItem list; History: History }
