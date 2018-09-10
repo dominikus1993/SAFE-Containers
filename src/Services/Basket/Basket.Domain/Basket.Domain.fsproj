@@ -5,7 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Library.fs" />
+    <Compile Include="Model.fs" />
+    <Compile Include="Dto.fs" />
   </ItemGroup>
 
 </Project>
