@@ -1,5 +1,6 @@
 namespace Basket.Domain.Model
 
+open Aggregates
 module Messages =
   type DomainMessage =
     | ElementNotExistsInBasket
@@ -9,6 +10,7 @@ module Values =
   type Id = Guid
   type History = { CreationTime: DateTime; LastUpdate: DateTime }
   type State =
+
     | New
     | LookingAround
     | Shopping
@@ -32,11 +34,16 @@ module Aggregates =
   open Entities
   open System
 
+  type NoItems = NoItems
+  type EmptyBasketState = NoItems
+  type ActiveBasketState = { CustomerData: CustomerData; Items: CustomerBasketItem list; History: History }
+
   type CustomerBasket = { Id: Id; CustomerData: CustomerData; Items: CustomerBasketItem list; History: History }
 
   type Basket =
-    | Empty of Id: Guid
-    |
+    | Empty of Id: Guid * EmptyBasketState
+    | LookingAround of Id: Guid * CustomerData: CustomerData * Items: CustomerBasketItem list * History: History
+    | Paid of CustomerBasket
 
   module CustomerBasket =
     let zero (customerId) =
