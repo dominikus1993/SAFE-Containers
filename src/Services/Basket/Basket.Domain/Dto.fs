@@ -18,7 +18,11 @@ module CustomerBasketItemDto =
 
 module CustomerBasketDto =
   let fromDomain(domain: CustomerBasket) =
-    { Id = domain.Id; CustomerId = domain.CustomerData.Id; Items = domain.Items |> List.map(CustomerBasketItemDto.fromDomain) |> List.toSeq; CreationTime = domain.History.CreationTime; LastUpdate = domain.History.LastUpdate }
+    let items = match domain.State with
+                | Empty(_) -> []
+                | Active(state) -> state.Items
+    { Id = domain.Id; CustomerId = domain.CustomerData.Id; Items = items |> List.map(CustomerBasketItemDto.fromDomain) |> List.toSeq; CreationTime = domain.History.CreationTime; LastUpdate = domain.History.LastUpdate }
 
   let toDomain(dto: CustomerBasketDto): CustomerBasket =
-    { Id = dto.Id; CustomerData = { Id = dto.CustomerId }; Items = dto.Items |> Seq.map(CustomerBasketItemDto.toDomain) |> Seq.toList; History = { CreationTime = dto.CreationTime; LastUpdate = dto.LastUpdate } }
+    let state = if dto.Items |> Seq.isEmpty then Empty(NoItems) else Active({ Items = dto.Items |> Seq.map(CustomerBasketItemDto.toDomain) |> Seq.toList })
+    { Id = dto.Id; CustomerData = { Id = dto.CustomerId }; State = state; History = { CreationTime = dto.CreationTime; LastUpdate = dto.LastUpdate } }
