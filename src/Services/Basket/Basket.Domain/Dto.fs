@@ -2,6 +2,7 @@ namespace Basket.Domain.Dto
 open System
 open Basket.Domain.Model.Aggregates
 open Basket.Domain.Model.Entities
+open System
 
 [<CLIMutable>]
 type CustomerBasketItemDto = { ProductId: Guid; Quantity: int }
@@ -17,6 +18,8 @@ module CustomerBasketItemDto =
     { Id = dto.ProductId; Quantity = dto.Quantity }
 
 module CustomerBasketDto =
+  let zero userId = { Id = Guid.NewGuid(); CustomerId = userId; Items = []; CreationTime = DateTime.UtcNow; LastUpdate = DateTime.UtcNow }
+
   let fromDomain(domain: CustomerBasket) =
     let items = match domain.State with
                 | Empty(_) -> []

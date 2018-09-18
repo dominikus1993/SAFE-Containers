@@ -7,8 +7,10 @@
   <ItemGroup>
     <Compile Include="Model.fs" />
     <Compile Include="Dto.fs" />
+    <Compile Include="Storage.fs" />
   </ItemGroup>
   <ItemGroup>
+      <PackageReference Include="Microsoft.FSharpLu.Json" Version="0.10.27" />
       <PackageReference Include="TaskBuilder.fs" Version="2.1.0" />
       <PackageReference Include="StackExchange.Redis" Version="2.0.505" />
   </ItemGroup>
