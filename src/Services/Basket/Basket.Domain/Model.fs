@@ -51,6 +51,18 @@ module Aggregates =
         | { Items = list } ->
           { basket with State = Active({ Items = item :: list  }); History = { basket.History with LastUpdate = DateTime.UtcNow } }
 
+    let removeItem(item: CustomerBasketItem) (basket: CustomerBasket) =
+      match basket.State with
+      | Empty(_) -> basket
+      | Active(state) ->
+        let items = state.Items
+                      |> List.map(fun i -> if i.Id = item.Id then i |> CustomerBasketItem.decrementQuantity item.Quantity else i)
+                      |> List.filter(fun i -> i.Quantity > 0)
+        match items with
+        | [] -> { basket with State = Empty(NoItems) }
+        | items -> { basket with State = Active({ Items = items })}
+
+
 
 
 
