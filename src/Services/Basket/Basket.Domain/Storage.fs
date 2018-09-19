@@ -2,12 +2,9 @@ namespace Basket.Domain.Storage
 open FSharp.Control.Tasks.V2
 open System.Threading.Tasks
 open Basket.Domain.Dto
-open System.Threading.Tasks
 open StackExchange.Redis
-open Basket.Domain.Dto
 open System
 open Microsoft.FSharpLu.Json
-open System.Threading.Tasks
 
 type ICustomerBasketRepository =
   abstract Get : customerId:Guid -> Task<Result<CustomerBasketDto, exn>>
