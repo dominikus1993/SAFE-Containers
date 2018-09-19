@@ -33,13 +33,19 @@ module CustomerBasket =
             let str = basket |> Compact.serialize |> RedisValue.op_Implicit
             let key = basket.CustomerId |> getRedisKey
             let tran = db.CreateTransaction()
-            tran.StringSetAsync(key, str) |> ignore
+            tran.StringSetAsync(key, str, Nullable(TimeSpan.MaxValue), When.NotExists) |> ignore
             do! tran.ExecuteAsync() |> Async.AwaitTask |> Async.Ignore
             return Ok(basket)
           }
         member __.Update basket =
           async {
-            return! __.Insert(basket)
+            let db = multiplexer.GetDatabase()
+            let str = basket |> Compact.serialize |> RedisValue.op_Implicit
+            let key = basket.CustomerId |> getRedisKey
+            let tran = db.CreateTransaction()
+            tran.KeyDeleteAsync(key) |> ignore
+            do! tran.ExecuteAsync() |> Async.AwaitTask |> Async.Ignore
+            return Ok(basket)
           }
         member __.Remove basket =
           async {

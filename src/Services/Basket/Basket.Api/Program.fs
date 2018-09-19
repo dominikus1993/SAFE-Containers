@@ -13,13 +13,12 @@ let main argv =
     let repo = CustomerBasket.storage multiplexer
     let userID = Guid.Parse("823f9603-00fe-4329-b091-997a25dc2f8f")
     printfn "%A" userID
-    // let basket = CustomerBasket.zero(userID) |> CustomerBasket.addItem { Id = Guid.NewGuid(); Quantity = 2 }
-    // let insertTask = repo.Insert (basket |> CustomerBasketDto.fromDomain)
-    // insertTask.Wait()
-    let basket = repo.Get userID |> Async.RunSynchronously //|> CustomerBasketDto.toDomain
-    match basket with
-    | Ok data ->
-      let rmRes = repo.Remove data |> Async.RunSynchronously
-      printfn "%A" rmRes
+    let basket = CustomerBasket.zero(userID) |> CustomerBasket.addItem { Id = Guid.NewGuid(); Quantity = 2 }
+    let insertTask = repo.Insert (basket |> CustomerBasketDto.fromDomain) |> Async.RunSynchronously
+    // let basket = repo.Get userID |> Async.RunSynchronously //|> CustomerBasketDto.toDomain
+    // match basket with
+    // | Ok data ->
+    //   let rmRes = repo.Remove data |> Async.RunSynchronously
+    //   printfn "%A" rmRes
     printfn "Hello World from F#!"
     0 // return an integer exit code
