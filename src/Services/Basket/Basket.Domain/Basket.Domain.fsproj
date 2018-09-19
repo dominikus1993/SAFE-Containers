@@ -8,6 +8,7 @@
     <Compile Include="Model.fs" />
     <Compile Include="Dto.fs" />
     <Compile Include="Storage.fs" />
+    <Compile Include="Service.fs" />
   </ItemGroup>
   <ItemGroup>
       <PackageReference Include="Microsoft.FSharpLu.Json" Version="0.10.27" />
