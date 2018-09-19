@@ -7,29 +7,38 @@ open StackExchange.Redis
 open Basket.Domain.Dto
 open System
 open Microsoft.FSharpLu.Json
+open System.Threading.Tasks
 
 type ICustomerBasketRepository =
-  abstract Get : userId:Guid -> Task<Result<CustomerBasketDto, exn>>
+  abstract Get : customerId:Guid -> Task<Result<CustomerBasketDto, exn>>
   abstract Insert: CustomerBasketDto -> Task<Result<CustomerBasketDto, exn>>
   abstract Update: CustomerBasketDto -> Task<Result<CustomerBasketDto, exn>>
   abstract Remove: CustomerBasketDto -> Task<Result<CustomerBasketDto, exn>>
 
 module CustomerBasket =
+  let private getRedisKey customerId = sprintf "{cart/%s}" (customerId.ToString()) |> RedisKey.op_Implicit
+
   let storage (multiplexer: IConnectionMultiplexer) =
     { new ICustomerBasketRepository with
-        member __.Get userId =
+        member __.Get customerId =
           task {
             let db = multiplexer.GetDatabase()
-            let key = sprintf "{cart/%s}" (userId.ToString()) |> RedisKey.op_Implicit
+            let key = getRedisKey customerId
             let! result = db.StringGetAsync(key)
             if result.IsNullOrEmpty then
-              return Ok(CustomerBasketDto.zero(userId))
+              return Ok(CustomerBasketDto.zero(customerId))
             else
               return Ok(result |> string |> Compact.deserialize)
           }
         member __.Insert basket =
           task {
-            return Error(Exception("daasd"))
+            let db = multiplexer.GetDatabase()
+            let str = basket |> Compact.serialize |> RedisValue.op_Implicit
+            let key = basket.CustomerId |> getRedisKey
+            let tran = db.CreateTransaction()
+            tran.StringSetAsync(key, str) |> ignore
+            do! tran.ExecuteAsync() :> Task
+            return Ok(basket)
           }
         member __.Update basket =
           task {
