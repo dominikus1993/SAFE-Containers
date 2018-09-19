@@ -42,9 +42,15 @@ module CustomerBasket =
           }
         member __.Update basket =
           task {
-            return Error(Exception("daasd"))
+            return! __.Insert(basket)
           }
         member __.Remove basket =
           task {
-            return Error(Exception("daasd"))
+            let db = multiplexer.GetDatabase()
+            let str = basket |> Compact.serialize |> RedisValue.op_Implicit
+            let key = basket.CustomerId |> getRedisKey
+            let tran = db.CreateTransaction()
+            tran.KeyDeleteAsync(key) |> ignore
+            do! tran.ExecuteAsync() :> Task
+            return Ok(basket)
           }}
