@@ -16,10 +16,10 @@ let main argv =
     // let basket = CustomerBasket.zero(userID) |> CustomerBasket.addItem { Id = Guid.NewGuid(); Quantity = 2 }
     // let insertTask = repo.Insert (basket |> CustomerBasketDto.fromDomain)
     // insertTask.Wait()
-    let basket = repo.Get userID |> Async.AwaitTask |> Async.RunSynchronously //|> CustomerBasketDto.toDomain
+    let basket = repo.Get userID |> Async.RunSynchronously //|> CustomerBasketDto.toDomain
     match basket with
     | Ok data ->
-      let rmRes = repo.Remove data |> Async.AwaitTask |> Async.RunSynchronously
+      let rmRes = repo.Remove data |> Async.RunSynchronously
       printfn "%A" rmRes
     printfn "Hello World from F#!"
     0 // return an integer exit code

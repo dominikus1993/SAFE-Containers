@@ -7,10 +7,10 @@ open System
 open Microsoft.FSharpLu.Json
 
 type ICustomerBasketRepository =
-  abstract Get : customerId:Guid -> Task<Result<CustomerBasketDto, exn>>
-  abstract Insert: CustomerBasketDto -> Task<Result<CustomerBasketDto, exn>>
-  abstract Update: CustomerBasketDto -> Task<Result<CustomerBasketDto, exn>>
-  abstract Remove: CustomerBasketDto -> Task<Result<CustomerBasketDto, exn>>
+  abstract Get : customerId:Guid -> Async<Result<CustomerBasketDto, exn>>
+  abstract Insert: CustomerBasketDto -> Async<Result<CustomerBasketDto, exn>>
+  abstract Update: CustomerBasketDto -> Async<Result<CustomerBasketDto, exn>>
+  abstract Remove: CustomerBasketDto -> Async<Result<CustomerBasketDto, exn>>
 
 module CustomerBasket =
   let private getRedisKey customerId = sprintf "{cart/%s}" (customerId.ToString()) |> RedisKey.op_Implicit
@@ -18,36 +18,36 @@ module CustomerBasket =
   let storage (multiplexer: IConnectionMultiplexer) =
     { new ICustomerBasketRepository with
         member __.Get customerId =
-          task {
+          async {
             let db = multiplexer.GetDatabase()
             let key = getRedisKey customerId
-            let! result = db.StringGetAsync(key)
+            let! result = db.StringGetAsync(key) |> Async.AwaitTask
             if result.IsNullOrEmpty then
               return Ok(CustomerBasketDto.zero(customerId))
             else
               return Ok(result |> string |> Compact.deserialize)
           }
         member __.Insert basket =
-          task {
+          async {
             let db = multiplexer.GetDatabase()
             let str = basket |> Compact.serialize |> RedisValue.op_Implicit
             let key = basket.CustomerId |> getRedisKey
             let tran = db.CreateTransaction()
             tran.StringSetAsync(key, str) |> ignore
-            do! tran.ExecuteAsync() :> Task
+            do! tran.ExecuteAsync() |> Async.AwaitTask |> Async.Ignore
             return Ok(basket)
           }
         member __.Update basket =
-          task {
+          async {
             return! __.Insert(basket)
           }
         member __.Remove basket =
-          task {
+          async {
             let db = multiplexer.GetDatabase()
             let str = basket |> Compact.serialize |> RedisValue.op_Implicit
             let key = basket.CustomerId |> getRedisKey
             let tran = db.CreateTransaction()
             tran.KeyDeleteAsync(key) |> ignore
-            do! tran.ExecuteAsync() :> Task
+            do! tran.ExecuteAsync() |> Async.AwaitTask |> Async.Ignore
             return Ok(basket)
           }}
