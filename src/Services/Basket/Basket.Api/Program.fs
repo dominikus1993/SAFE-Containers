@@ -11,9 +11,8 @@ let configureServices (services : IServiceCollection) =
     services.AddSingleton<IConnectionMultiplexer>(fun opt -> ConnectionMultiplexer.Connect(Environment.getOrElse "REDIS_CONNECTION" "localhost") :> IConnectionMultiplexer) |> ignore
     services
 
-
-
 let topRouter = router {
+    pipe_through (Auth.requireAuthentication JWT)
     forward "/basket" CustomerBasket.controller
 }
 
@@ -26,6 +25,7 @@ let corsPolicy (config: CorsPolicyBuilder) =
 let app = application {
     use_router topRouter
     use_pathbase (Environment.getOrElse "PATH_BASE" "")
+    use_jwt_authentication (Environment.getOrElse "JWT_SECRET" "ksX9NWD820UKt2T9UkC3jJAaS7W0vvyj") (Environment.getOrElse "JWT_ISSUER" "http://auth.api")
     use_cors ("default")(corsPolicy)
     url (Environment.getOrElse "API_URL" "http://0.0.0.0:8085/")
     service_config (configureServices)

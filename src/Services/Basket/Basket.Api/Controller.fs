@@ -3,6 +3,7 @@ open Basket.Domain.Storage
 open Basket.Domain.Model.Aggregates
 open Basket.Domain.Dto
 open System
+open System.Security.Claims
 
 module CustomerBasket =
   open Saturn
@@ -13,7 +14,8 @@ module CustomerBasket =
   let private indexAction =
     fun (ctx : HttpContext) ->
       task {
-        return! Response.ok ctx (CustomerBasket.zero(Guid.NewGuid()) |> CustomerBasketResponseDto.fromDomain)
+        let userId = ctx.User.FindFirst ClaimTypes.NameIdentifier
+        return! Response.ok ctx (userId.Value)
       }
 
   let controller = controller {
