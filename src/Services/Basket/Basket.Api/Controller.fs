@@ -4,6 +4,7 @@ open Basket.Domain.Model.Aggregates
 open Basket.Domain.Dto
 open System
 open System.Security.Claims
+open Basket.Domain.Service
 
 module CustomerBasket =
   open Saturn
@@ -15,7 +16,12 @@ module CustomerBasket =
     fun (ctx : HttpContext) ->
       task {
         let userId = ctx.User.FindFirst ClaimTypes.NameIdentifier
-        return! Response.ok ctx (userId.Value)
+        let repo =  ctx.GetService<ICustomerBasketRepository>()
+        match! CustomerBasket.get repo.Get (Guid.Parse(userId.Value)) |> Async.StartAsTask with
+        | Ok data ->
+          return! Response.ok ctx (data)
+        | Error err ->
+          return! Response.internalError ctx err.Message
       }
 
   let controller = controller {
