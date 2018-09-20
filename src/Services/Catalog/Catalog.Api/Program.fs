@@ -1,4 +1,4 @@
-﻿module Identity.Api.App
+﻿module Catalog.Api.App
 
 open Microsoft.Extensions.DependencyInjection
 open Saturn

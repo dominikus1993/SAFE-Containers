@@ -1,24 +1,37 @@
-﻿// Learn more about F# at http://fsharp.org
+﻿module Basket.Api.App
 
-open System
+open Microsoft.Extensions.DependencyInjection
+open Saturn
+open MongoDB.Driver
+open Microsoft.AspNetCore.Cors.Infrastructure
 open StackExchange.Redis
-open Basket.Domain.Storage
-open Basket.Domain.Model.Aggregates
-open Basket.Domain.Dto
-open Basket.Domain.Dto
+open Basket.Api.Controller
+
+let configureServices (services : IServiceCollection) =
+    services.AddSingleton<IConnectionMultiplexer>(fun opt -> ConnectionMultiplexer.Connect(Environment.getOrElse "REDIS_CONNECTION" "localhost") :> IConnectionMultiplexer) |> ignore
+    services
+
+
+
+let topRouter = router {
+    forward "/basket" CustomerBasket.controller
+}
+
+let corsPolicy (config: CorsPolicyBuilder) =
+  config.AllowAnyHeader() |> ignore
+  config.AllowAnyMethod() |> ignore
+  config.AllowAnyOrigin() |> ignore
+  config.AllowCredentials() |> ignore
+
+let app = application {
+    use_router topRouter
+    use_pathbase (Environment.getOrElse "PATH_BASE" "")
+    use_cors ("default")(corsPolicy)
+    url (Environment.getOrElse "API_URL" "http://0.0.0.0:8085/")
+    service_config (configureServices)
+}
 
 [<EntryPoint>]
-let main argv =
-    let multiplexer = ConnectionMultiplexer.Connect("localhost")
-    let repo = CustomerBasket.storage multiplexer
-    let userID = Guid.Parse("823f9603-00fe-4329-b091-997a25dc2f8f")
-    printfn "%A" userID
-    let basket = CustomerBasket.zero(userID) |> CustomerBasket.addItem { Id = Guid.NewGuid(); Quantity = 2 }
-    let insertTask = repo.Insert (basket |> CustomerBasketDto.fromDomain) |> Async.RunSynchronously
-    // let basket = repo.Get userID |> Async.RunSynchronously //|> CustomerBasketDto.toDomain
-    // match basket with
-    // | Ok data ->
-    //   let rmRes = repo.Remove data |> Async.RunSynchronously
-    //   printfn "%A" rmRes
-    printfn "Hello World from F#!"
-    0 // return an integer exit code
+let main _ =
+    run app
+    0

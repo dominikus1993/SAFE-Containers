@@ -10,12 +10,24 @@ type CustomerBasketItemDto = { ProductId: Guid; Quantity: int }
 [<CLIMutable>]
 type CustomerBasketDto = { Id: Guid; CustomerId: Guid; Items: CustomerBasketItemDto seq; CreationTime: DateTime; LastUpdate: DateTime }
 
+[<CLIMutable>]
+type CustomerBasketResponseDto = { Id: Guid; Items: CustomerBasketItemDto seq; }
+
 module CustomerBasketItemDto =
   let fromDomain(domain: CustomerBasketItem) =
     { ProductId = domain.Id; Quantity = domain.Quantity }
 
   let toDomain(dto: CustomerBasketItemDto) =
     { Id = dto.ProductId; Quantity = dto.Quantity }
+
+module CustomerBasketResponseDto =
+  let zero() = { Id = Guid.NewGuid(); Items = []; }
+
+  let fromDomain(domain: CustomerBasket) =
+    let items = match domain.State with
+                | Empty(_) -> []
+                | Active(state) -> state.Items
+    { Id = domain.Id; Items = items |> List.map(CustomerBasketItemDto.fromDomain) |> List.toSeq; }
 
 module CustomerBasketDto =
   let zero userId = { Id = Guid.NewGuid(); CustomerId = userId; Items = []; CreationTime = DateTime.UtcNow; LastUpdate = DateTime.UtcNow }
