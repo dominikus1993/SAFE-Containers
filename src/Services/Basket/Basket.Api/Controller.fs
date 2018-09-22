@@ -11,6 +11,10 @@ open Giraffe
 open Microsoft.AspNetCore.Mvc
 
 module CustomerBasketItem =
+
+  [<CLIMutable>]
+  type DeleteItemQuery = { Quantity: int }
+
   let private addBasketItem (basketId: string) =
     fun (ctx: HttpContext) ->
       task {
@@ -24,10 +28,27 @@ module CustomerBasketItem =
         | Error err ->
           return Response.internalError ctx "Error"
       }
-
+  let private removeBasketItem (basketId: string) =
+    fun (ctx: HttpContext) (id: string) ->
+      task {
+        let userId = (ctx.User.FindFirst ClaimTypes.NameIdentifier).Value |> Guid.Parse
+        let query = Controller.getQuery<DeleteItemQuery> ctx
+        let repo =  ctx.GetService<ICustomerBasketRepository>()
+        let! basket = CustomerBasket.removeItem repo.Get repo.Update (Guid.Parse(basketId), userId) { ProductId = Guid.Parse(id); Quantity = query.Quantity} |> Async.StartAsTask
+        match basket with
+        | Ok data ->
+          return Response.ok ctx (data |> CustomerBasketResponseDto.fromDto)
+        | Error err ->
+          match err with
+          | BasketNotExists ->
+            return Response.ok ctx (CustomerBasket.zero(Guid.NewGuid())(userId) |> CustomerBasketResponseDto.fromDomain)
+          | _ ->
+            return Response.internalError ctx "Error"
+      }
   let controller (basketId: string) =
     controller {
        create (addBasketItem basketId)
+       delete (removeBasketItem basketId)
     }
 
 module CustomerBasket =
@@ -38,7 +59,7 @@ module CustomerBasket =
         let repo =  ctx.GetService<ICustomerBasketRepository>()
         match! CustomerBasket.get repo.Get (userId) |> Async.StartAsTask with
         | Ok data ->
-          return! Response.ok ctx (data |> CustomerBasketResponseDto.fromDto)
+          return! Response.ok ctx ("")
         | Error err ->
             match err with
             | BasketNotExists ->
@@ -47,7 +68,31 @@ module CustomerBasket =
               return! Response.internalError ctx "Error"
       }
 
+  let private deleteAction =
+    fun (ctx : HttpContext) (id: string) ->
+      task {
+        let userId = (ctx.User.FindFirst ClaimTypes.NameIdentifier).Value |> Guid.Parse
+        let repo =  ctx.GetService<ICustomerBasketRepository>()
+        let! r = CustomerBasket.get repo.Get (userId)
+                  |> AsyncResult.bind(fun basket ->
+                                        async {
+                                          return! CustomerBasket.remove repo.Remove (basket)
+                                        })
+                  |> Async.StartAsTask
+        match r with
+        | Ok data ->
+          return! Response.ok ctx (data |> CustomerBasketResponseDto.fromDto)
+        | Error err ->
+            match err with
+            | BasketNotExists ->
+              return! Response.ok ctx (CustomerBasket.zero(Guid.NewGuid())(userId) |> CustomerBasketResponseDto.fromDomain)
+            | _ ->
+
+              return! Response.internalError ctx "Error"
+      }
+
   let controller = controller {
     subController "/items" CustomerBasketItem.controller
     index indexAction
+    delete deleteAction
   }
