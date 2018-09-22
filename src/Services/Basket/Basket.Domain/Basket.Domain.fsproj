@@ -1,11 +1,20 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
-
   <ItemGroup>
-    <Compile Include="Library.fs" />
+    <Compile Include="Messages.fs" />
+    <Compile Include="Model.fs" />
+    <Compile Include="Dto.fs" />
+    <Compile Include="Storage.fs" />
+    <Compile Include="Service.fs" />
   </ItemGroup>
-
+  <ItemGroup>
+    <PackageReference Include="Microsoft.FSharpLu.Json" Version="0.10.27" />
+    <PackageReference Include="TaskBuilder.fs" Version="2.1.0" />
+    <PackageReference Include="StackExchange.Redis" Version="2.0.505" />
+  </ItemGroup>
+  <ItemGroup>
+      <ProjectReference Include="..\..\..\Infrastructure\Common\Common.fsproj" />
+  </ItemGroup>
 </Project>

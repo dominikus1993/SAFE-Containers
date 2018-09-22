@@ -5,4 +5,5 @@ packages/
 paket-files/
 .vs/
 .idea/
+.ionide/
 node_modules/
