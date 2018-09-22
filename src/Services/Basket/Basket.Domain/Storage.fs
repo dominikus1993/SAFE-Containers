@@ -5,12 +5,13 @@ open Basket.Domain.Dto
 open StackExchange.Redis
 open System
 open Microsoft.FSharpLu.Json
+open Basket.Domain.Messages
 
 type ICustomerBasketRepository =
-  abstract Get : customerId:Guid -> Async<Result<CustomerBasketDto, exn>>
-  abstract Insert: CustomerBasketDto -> Async<Result<CustomerBasketDto, exn>>
-  abstract Update: CustomerBasketDto -> Async<Result<CustomerBasketDto, exn>>
-  abstract Remove: CustomerBasketDto -> Async<Result<CustomerBasketDto, exn>>
+  abstract Get : customerId:Guid -> Async<Result<CustomerBasketDto, ErrorMessage>>
+  abstract Insert: CustomerBasketDto -> Async<Result<CustomerBasketDto, ErrorMessage>>
+  abstract Update: CustomerBasketDto -> Async<Result<CustomerBasketDto, ErrorMessage>>
+  abstract Remove: CustomerBasketDto -> Async<Result<CustomerBasketDto, ErrorMessage>>
 
 module CustomerBasket =
   let private getRedisKey customerId = sprintf "{cart/%s}" (customerId.ToString()) |> RedisKey.op_Implicit
@@ -23,7 +24,7 @@ module CustomerBasket =
             let key = getRedisKey customerId
             let! result = db.StringGetAsync(key) |> Async.AwaitTask
             if result.IsNullOrEmpty then
-              return Ok(CustomerBasketDto.zero(customerId))
+              return Error(BasketNotExists)
             else
               return Ok(result |> string |> Compact.deserialize)
           }

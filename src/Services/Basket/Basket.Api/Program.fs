@@ -31,7 +31,7 @@ let app = application {
     use_pathbase (Environment.getOrElse "PATH_BASE" "")
     use_jwt_authentication (Environment.getOrElse "JWT_SECRET" "ksX9NWD820UKt2T9UkC3jJAaS7W0vvyj") (Environment.getOrElse "JWT_ISSUER" "http://auth.api")
     use_cors ("default")(corsPolicy)
-    url (Environment.getOrElse "API_URL" "http://0.0.0.0:8085/")
+    url (Environment.getOrElse "API_URL" "http://0.0.0.0:8086/")
     service_config (configureServices)
 }
 

@@ -10,5 +10,12 @@ module AsyncResult
   let compose (f : 'a -> Async<Result<'b, 'e>>) (g : 'b -> Async<Result<'c, 'e>>) : 'a -> Async<Result<'c, 'e>> =
       fun x -> bind g (f x)
 
+  let valueOrDefault f result =
+    async {
+      match! result with
+      | Ok ok -> return ok
+      | Error err -> return f err
+    }
+
   let (>>=) a f = bind f a
   let (>=>) f g = compose f g

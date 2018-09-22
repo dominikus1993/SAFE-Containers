@@ -37,7 +37,7 @@ module Aggregates =
   type CustomerBasket = { Id: Id; CustomerData: CustomerData; State: BasketState ; History: History }
 
   module CustomerBasket =
-    let zero (customerId) =
+    let zero id customerId =
       { Id = Guid.NewGuid(); CustomerData = { Id = customerId }; State = Empty(NoItems); History = { CreationTime = DateTime.UtcNow; LastUpdate = DateTime.UtcNow } }
 
     let addItem (item: CustomerBasketItem) (basket: CustomerBasket) =

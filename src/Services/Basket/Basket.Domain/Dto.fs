@@ -30,7 +30,7 @@ module CustomerBasketResponseDto =
     { Id = domain.Id; Items = items |> List.map(CustomerBasketItemDto.fromDomain) |> List.toSeq; }
 
 module CustomerBasketDto =
-  let zero userId = { Id = Guid.NewGuid(); CustomerId = userId; Items = []; CreationTime = DateTime.UtcNow; LastUpdate = DateTime.UtcNow }
+  let zero basketId customerId = { Id = basketId; CustomerId = customerId; Items = []; CreationTime = DateTime.UtcNow; LastUpdate = DateTime.UtcNow }
 
   let fromDomain(domain: CustomerBasket) =
     let items = match domain.State with

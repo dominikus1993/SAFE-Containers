@@ -1,3 +1,11 @@
-GET http://localhost:8085/basket HTTP/1.1
-Content-Type: "application/json"
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwNjU0MWZhNi04NDkwLTRmN2UtOTViNy02OTkyZjM5Yzc1NzciLCJuYW1lIjoiSm9obiBEb2UiLCJpYXQiOjE1MTYyMzkwMjIsImlzcyI6Imh0dHA6Ly9hdXRoLmFwaSIsImF1ZCI6Imh0dHA6Ly9hdXRoLmFwaSIsImV4cCI6MTUzNzQ3NDk0M30.NPMurWl03W-uxWajtv-ZswAh2Vm_e9VZXt7NsVcBM8o
+GET http://localhost:8086/basket HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwNjU0MWZhNi04NDkwLTRmN2UtOTViNy02OTkyZjM5Yzc1NzciLCJuYW1lIjoiSm9obiBEb2UiLCJpYXQiOjE1MTYyMzkwMjIsImlzcyI6Imh0dHA6Ly9hdXRoLmFwaSIsImF1ZCI6Imh0dHA6Ly9hdXRoLmFwaSIsImV4cCI6MTUzODY4Njk0M30._mBMXCypKIGxl2N5bmHzGrb3dDZU9KP6xAv7kYELNkA
+
+###
+
+POST http://localhost:8086/basket/1629077d-90f7-42f3-83e5-2e6be7443c23/items HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwNjU0MWZhNi04NDkwLTRmN2UtOTViNy02OTkyZjM5Yzc1NzciLCJuYW1lIjoiSm9obiBEb2UiLCJpYXQiOjE1MTYyMzkwMjIsImlzcyI6Imh0dHA6Ly9hdXRoLmFwaSIsImF1ZCI6Imh0dHA6Ly9hdXRoLmFwaSIsImV4cCI6MTUzODY4Njk0M30._mBMXCypKIGxl2N5bmHzGrb3dDZU9KP6xAv7kYELNkA
+
+ { "productId": "b339d674-bf00-4596-bab2-84ae998fa66d", "quantity": 2 }
