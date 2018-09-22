@@ -11,23 +11,23 @@ open Giraffe
 open Microsoft.AspNetCore.Mvc
 
 module CustomerBasketItem =
-  let private addBasketItem =
+  let private addBasketItem (basketId: string) =
     fun (ctx: HttpContext) ->
       task {
         let userId = (ctx.User.FindFirst ClaimTypes.NameIdentifier).Value |> Guid.Parse
         let! basketItem = Controller.getModel<CustomerBasketItemDto> ctx
         let repo =  ctx.GetService<ICustomerBasketRepository>()
-        let! basket = CustomerBasket.addItem repo.Get repo.Insert repo.Update (Guid.NewGuid(), userId) basketItem |> Async.StartAsTask
+        let! basket = CustomerBasket.addItem repo.Get repo.Insert repo.Update (Guid.Parse(basketId), userId) basketItem |> Async.StartAsTask
         match basket with
         | Ok data ->
-          return Response.created ctx data
+          return Response.ok ctx (data |> CustomerBasketResponseDto.fromDto)
         | Error err ->
           return Response.internalError ctx "Error"
       }
 
   let controller (basketId: string) =
     controller {
-       create addBasketItem
+       create (addBasketItem basketId)
     }
 
 module CustomerBasket =
@@ -38,11 +38,11 @@ module CustomerBasket =
         let repo =  ctx.GetService<ICustomerBasketRepository>()
         match! CustomerBasket.get repo.Get (userId) |> Async.StartAsTask with
         | Ok data ->
-          return! Response.ok ctx (data)
+          return! Response.ok ctx (data |> CustomerBasketResponseDto.fromDto)
         | Error err ->
             match err with
             | BasketNotExists ->
-              return! Response.ok ctx (CustomerBasketDto.zero(Guid.NewGuid())(userId))
+              return! Response.ok ctx (CustomerBasket.zero(Guid.NewGuid())(userId) |> CustomerBasketResponseDto.fromDomain)
             | _ ->
               return! Response.internalError ctx "Error"
       }

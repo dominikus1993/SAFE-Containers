@@ -44,7 +44,7 @@ module CustomerBasket =
             let str = basket |> Compact.serialize |> RedisValue.op_Implicit
             let key = basket.CustomerId |> getRedisKey
             let tran = db.CreateTransaction()
-            tran.KeyDeleteAsync(key) |> ignore
+            tran.StringSetAsync(key, str, Nullable(TimeSpan.MaxValue), When.Exists) |> ignore
             do! tran.ExecuteAsync() |> Async.AwaitTask |> Async.Ignore
             return Ok(basket)
           }

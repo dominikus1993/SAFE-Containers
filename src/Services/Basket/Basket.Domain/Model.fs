@@ -38,7 +38,7 @@ module Aggregates =
 
   module CustomerBasket =
     let zero id customerId =
-      { Id = Guid.NewGuid(); CustomerData = { Id = customerId }; State = Empty(NoItems); History = { CreationTime = DateTime.UtcNow; LastUpdate = DateTime.UtcNow } }
+      { Id = id; CustomerData = { Id = customerId }; State = Empty(NoItems); History = { CreationTime = DateTime.UtcNow; LastUpdate = DateTime.UtcNow } }
 
     let addItem (item: CustomerBasketItem) (basket: CustomerBasket) =
       match basket.State with
