@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <Compile Include="MongoDb.fs" />
+    <Compile Include="AppMetrics.fs" />
     <Compile Include="Saturn.fs" />
     <Compile Include="Environment.fs" />
     <Compile Include="Rop.fs" />
