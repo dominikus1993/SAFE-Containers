@@ -35,6 +35,7 @@ let app = application {
     use_pathbase (Environment.getOrElse "PATH_BASE" "")
     use_cors ("default")(corsPolicy)
     url (Environment.getOrElse "API_URL" "http://0.0.0.0:8085/")
+    use_app_metrics ( match Environment.getOrElse "PATH_BASE" "" with "" -> None | path -> Some(path))
     service_config (configureServices)
 }
 
