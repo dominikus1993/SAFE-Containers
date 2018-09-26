@@ -25,8 +25,8 @@ let serviceCheckView (check: CheckResult) =
     h1 [] [ encodedText check.ServiceName ]
     p [] [ encodedText check.Status.Status ]
     ul [] [
-      yield! (check.Status.Healthy |> Seq.map(fun kv -> checkView(kv.Key)(kv.Value)))
-      yield! (check.Status.UnHealthy |> Seq.map(fun kv -> checkView(kv.Key)(kv.Value)))
+      yield! (check.Status.GeHealthyStatus() |> Seq.map(fun kv -> checkView(kv.Key)(kv.Value)))
+      yield! (check.Status.GetUnhealthyStatus() |> Seq.map(fun kv -> checkView(kv.Key)(kv.Value)))
     ]
   ]
 
