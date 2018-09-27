@@ -10,6 +10,9 @@ open Microsoft.FSharpLu.Json
 type Check = { ServiceName: string; Url: string }
 
 [<CLIMutable>]
+type ServicesConfig = { Services: Check seq }
+
+[<CLIMutable>]
 type ServiceStatus = { Status: string; Healthy: IDictionary<string, string>; UnHealthy: IDictionary<string, string> } with
   member this.GetUnhealthyStatus() =
     if this.UnHealthy |> isNull then

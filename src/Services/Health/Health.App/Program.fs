@@ -13,6 +13,8 @@ open Giraffe
 open Giraffe.GiraffeViewEngine
 open Service
 open System.Collections.Generic
+open Microsoft.Extensions.Configuration
+open Microsoft.Extensions.Options
 
 let checkView (key)(value) =
   li [_id key] [
@@ -42,7 +44,8 @@ let view (model: CheckResult list) =
 let handler =
   fun (next : HttpFunc) (ctx : HttpContext) ->
     task {
-      let! result = [{ ServiceName = "Basket.Api"; Url = "http://localhost:5000/basket/health"}; { ServiceName = "Catalog.Api"; Url = "http://localhost:5000/catalog/health"}] |> download
+      let config = ctx.GetService<IOptions<ServicesConfig>>()
+      let! result = config.Value.Services |> Seq.toList |> download
       return! htmlView (view (result |> Seq.toList)) next ctx
     }
 // ---------------------------------
@@ -68,6 +71,9 @@ let webApp =
 // Main
 // ---------------------------------
 
+let configuration =
+  ConfigurationBuilder().AddJsonFile("appsettings.json").AddEnvironmentVariables().Build()
+
 let configureApp (app : IApplicationBuilder) =
     app.UseGiraffeErrorHandler(errorHandler)
        .UseStaticFiles()
@@ -78,6 +84,7 @@ let configureServices (services : IServiceCollection) =
     services
         .AddResponseCaching()
         .AddGiraffe() |> ignore
+    services.Configure<ServicesConfig>(configuration) |> ignore
     services.AddDataProtection() |> ignore
 
 let configureLogging (loggerBuilder : ILoggingBuilder) =
