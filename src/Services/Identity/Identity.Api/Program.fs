@@ -42,17 +42,19 @@ let topRouter = router {
     forward "/users" usersController
 }
 
+let fullUrl = sprintf "%s%s" (Environment.getOrElse "URL" "http://127.0.0.1:8085") (Environment.getOrElse "PATH_BASE" "")
+let port = Environment.getOrElse "APP_PORT" "8085" |> Int32.Parse
+let consulEnabled = Environment.getOrElse "CONSUL_ENABLED" "true" |>  Boolean.Parse
 let app = application {
     use_router topRouter
     use_pathbase (Environment.getOrElse "PATH_BASE" "")
+    use_consul({  Address = Environment.getOrElse "CONSUL_URL" "127.0.0.1" ; Name = Environment.getOrElse "SERVICE_NAME" "Identity.Api"; Port = port; HealthCheckUrl = sprintf "%s/health" fullUrl ; PingUrl = sprintf "%s/ping" fullUrl; Enabled = consulEnabled })
+    use_app_metrics ( match Environment.getOrElse "PATH_BASE" "" with "" -> None | path -> Some(path))
     url (Environment.getOrElse "API_URL" "http://0.0.0.0:8085/")
     service_config (configureServices)
 }
 
 [<EntryPoint>]
 let main _ =
-    let client = new ConsulClient()
-    let agent = AgentServiceRegistration(Address = "127.0.0.1", ID = Guid.NewGuid().ToString(), Name = "Auth.Api", Port = 5200)
-    client.Agent.ServiceRegister(agent) |> Async.AwaitTask |> Async.RunSynchronously
     run app
     0
