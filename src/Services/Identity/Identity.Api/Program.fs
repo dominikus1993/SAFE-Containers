@@ -9,6 +9,9 @@ open Microsoft.Extensions.Configuration
 open Saturn
 open Identity.Domain.Config
 open Identity.Api.Auth.Users.Controller
+open Consul
+open Consul
+open System
 
 // ---------------------------------
 // Configuration
@@ -48,5 +51,8 @@ let app = application {
 
 [<EntryPoint>]
 let main _ =
+    let client = new ConsulClient()
+    let agent = AgentServiceRegistration(Address = "127.0.0.1", ID = Guid.NewGuid().ToString(), Name = "Auth.Api", Port = 5200)
+    client.Agent.ServiceRegister(agent) |> Async.AwaitTask |> Async.RunSynchronously
     run app
     0

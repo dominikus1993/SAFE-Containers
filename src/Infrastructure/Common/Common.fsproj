@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Config.fs" />
     <Compile Include="MongoDb.fs" />
     <Compile Include="AppMetrics.fs" />
     <Compile Include="Saturn.fs" />
@@ -18,6 +19,7 @@
     <PackageReference Include="App.Metrics.AspNetCore.Health.Endpoints" Version="2.0.0" />
     <PackageReference Include="App.Metrics.AspNetCore.Mvc" Version="2.0.0" />
     <PackageReference Include="App.Metrics.AspNetCore.Tracking" Version="2.0.0" />
+    <PackageReference Include="Consul" Version="0.7.2.6" />
     <PackageReference Include="FSharp.Core" Version="4.5.2" />
     <PackageReference Include="MongoDB.Driver" Version="2.7.0" />
     <PackageReference Include="Saturn" Version="0.7.5" />
