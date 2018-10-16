@@ -11,14 +11,17 @@ services:
       - API_URL=http://0.0.0.0:80
       - PATH_BASE=/identity
   basket.api:
-    image: safe_shop/catalog.api:${TAG:-latest}
+    image: safe_shop/basket.api:${TAG:-latest}
     build:
       context: .
       dockerfile: src/Services/Basket/Basket.Api/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - API_URL=http://0.0.0.0:80
+      - REDIS_CONNECTION=basket.data:6379
       - PATH_BASE=/basket
+    depends_on:
+      - basket.data
   catalog.api:
     image: safe_shop/catalog.api:${TAG:-latest}
     build:
@@ -51,12 +54,17 @@ services:
     depends_on:
       - identity.api
       - catalog.api
+      - basket.api
   catalog.data:
     image: mongo
     ports:
       - "27017:27017"
     volumes:
       - catalog:/data/db
+  basket.data:
+    image: redis
+    ports:
+      - "6379:6379"
   portainer:
     image: portainer/portainer
     ports:

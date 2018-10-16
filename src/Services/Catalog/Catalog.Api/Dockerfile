@@ -12,7 +12,7 @@ RUN dotnet build -c Release -o /app
 FROM build as test
 WORKDIR /src/src/Services/Catalog/Catalog.UnitTests
 RUN dotnet restore -nowarn:msb3202,nu1503
-RUN dotnet test
+RUN dotnet run
 
 FROM build AS publish
 WORKDIR /src/src/Services/Catalog/Catalog.Api

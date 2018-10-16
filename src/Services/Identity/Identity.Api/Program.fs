@@ -9,6 +9,9 @@ open Microsoft.Extensions.Configuration
 open Saturn
 open Identity.Domain.Config
 open Identity.Api.Auth.Users.Controller
+open Consul
+open Consul
+open System
 
 // ---------------------------------
 // Configuration
@@ -38,10 +41,10 @@ let topRouter = router {
     post "/token" handleGetToken
     forward "/users" usersController
 }
-
 let app = application {
     use_router topRouter
     use_pathbase (Environment.getOrElse "PATH_BASE" "")
+    use_app_metrics ( match Environment.getOrElse "PATH_BASE" "" with "" -> None | path -> Some(path))
     url (Environment.getOrElse "API_URL" "http://0.0.0.0:8085/")
     service_config (configureServices)
 }
