@@ -5,7 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Library.fs" />
+    <Compile Include="Values.fs" />
+    <Compile Include="Aggregates.fs" />
   </ItemGroup>
 
 </Project>
