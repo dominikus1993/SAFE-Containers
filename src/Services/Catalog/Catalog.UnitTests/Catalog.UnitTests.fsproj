@@ -6,10 +6,11 @@
     <GenerateProgramFile>false</GenerateProgramFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Expecto" Version="8.4.1" />
+    <PackageReference Include="Expecto" Version="8.4.3" />
+    <PackageReference Include="Expecto.TestResults" Version="8.4.3" />
     <PackageReference Include="FSharp.Core" Version="4.5.2" />
     <PackageReference Include="YoloDev.Expecto.TestSdk" Version="0.5.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Catalog.Domain\Catalog.Domain.fsproj" />

@@ -1,8 +1,7 @@
-﻿// Learn more about F# at http://fsharp.org
-
-open System
+﻿open Expecto
 
 [<EntryPoint>]
-let main argv =
-    printfn "Hello World from F#!"
-    0 // return an integer exit code
+let main args =
+  let writeResults = TestResults.writeNUnitSummary ("TestResults.xml", "Expecto.Tests")
+  let config = defaultConfig.appendSummaryHandler writeResults
+  runTestsInAssembly config args
