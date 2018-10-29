@@ -7,8 +7,7 @@ open Fable.PowerPack
 open System.Net.Http.Headers
 open Fable.PowerPack.Fetch
 open Fable.Core
-
-[<Pojo>]
+open Thoth.Json
 type ProductsQuery =
   { page : int
     pageSize : int
@@ -33,7 +32,8 @@ let getProducts (query : ProductsQuery) =
         (sprintf "products?pageSize=%d&pageIndex=%d&sort=%s" query.pageSize query.page query.sort)
       |> addFiltersToQueryString (query.filters |> Array.toList)
     let props = [ RequestProperties.Method HttpMethod.GET ]
-    return! fetchAs<ProductData<Product array, PagedMeta>> url props
+    let decoder = Decode.Auto.generateDecoder<ProductData<Product array, PagedMeta>>()
+    return! fetchAs<ProductData<Product array, PagedMeta>> url decoder props
   }
 
 
@@ -45,7 +45,8 @@ let getTags () =
       sprintf "%s%s" Urls.CatalogApiUrl
         (sprintf "tags")
     let props = [ RequestProperties.Method HttpMethod.GET ]
-    return! fetchAs<Tag array> url props
+    let decoder = Decode.Auto.generateDecoder<Tag array>()
+    return! fetchAs<Tag array> url decoder props
   }
 
 
