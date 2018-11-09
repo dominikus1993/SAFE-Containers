@@ -15,7 +15,7 @@
     <PackageReference Include="App.Metrics.Extensions.DependencyInjection" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.4" />
     <PackageReference Include="FSharp.Core" Version="4.5.2" />
-    <PackageReference Include="MongoDB.Driver" Version="2.7.0" />
+    <PackageReference Include="MongoDB.Driver" Version="2.7.1" />
     <PackageReference Include="Saturn" Version="0.7.5" />
     <PackageReference Include="TaskBuilder.fs" Version="2.1.0" />
     <PackageReference Include="StackExchange.Redis" Version="2.0.513" />
