@@ -5,6 +5,9 @@ EXPOSE 80
 FROM microsoft/dotnet:2.1-sdk-stretch AS build
 WORKDIR /src
 COPY . .
+RUN dotnet tool install --tool-path ".paket" paket
+ENV PATH="/root/.dotnet/tools:${PATH}"
+
 WORKDIR /src/src/Services/Basket/Basket.Api
 RUN dotnet restore -nowarn:msb3202,nu1503
 RUN dotnet build -c Release -o /app

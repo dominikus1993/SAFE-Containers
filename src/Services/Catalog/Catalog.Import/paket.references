@@ -1,0 +1,13 @@
+FSharp.Core
+
+group Service
+  Akka
+  Akka.FSharp
+  Akka.Streams
+  Microsoft.AspNetCore.App
+  Argu
+  Bogus
+
+
+
+

@@ -1,16 +1,57 @@
 source https://nuget.org/api/v2
-storage:none
+framework: netcoreapp2.1, netstandard2.0
 
-nuget FSharp.Core redirects: force
+nuget FSharp.Core
 
-nuget Fable.Core ~> 2
-nuget Fable.Elmish ~> 2
-nuget Fable.Elmish.Debugger ~> 2
-nuget Fable.Elmish.React ~> 2
-nuget Fable.Elmish.HMR ~> 2
-nuget Fable.Elmish.Browser ~> 2
-nuget Fable.React ~> 4
-nuget Fulma ~> 1
-nuget Fulma.Extensions ~> 1
+group Service
+  source https://nuget.org/api/v2
+  storage:none
+  framework: netcoreapp2.1, netstandard2.0
 
-clitool dotnet-fable ~> 2
+  nuget App.Metrics.Extensions.DependencyInjection
+  nuget Microsoft.AspNetCore.App
+  nuget Saturn
+  nuget TaskBuilder.fs
+  nuget StackExchange.Redis
+  nuget System.IdentityModel.Tokens.Jwt
+  nuget Microsoft.FSharpLu.Json
+  nuget App.Metrics.AspNetCore.Endpoints
+  nuget App.Metrics.AspNetCore.Health
+  nuget App.Metrics.AspNetCore.Health.Endpoints
+  nuget App.Metrics.AspNetCore.Mvc
+  nuget App.Metrics.AspNetCore.Tracking
+  nuget Consul
+  nuget MongoDB.Driver
+  nuget Microsoft.AspNetCore.Hosting.Abstractions
+  nuget Akka
+  nuget Akka.FSharp
+  nuget Akka.Streams
+  nuget Argu
+  nuget Bogus
+  nuget Hopac
+  nuget Http.fs
+  nuget Giraffe
+
+  nuget xunit
+  nuget xunit.runner.visualstudio
+  nuget Expecto
+  nuget Expecto.TestResults
+  nuget YoloDev.Expecto.TestSdk
+  nuget Microsoft.NET.Test.Sdk
+
+group Client
+  source https://nuget.org/api/v2
+  storage:none
+  framework: netstandard2.0
+
+  nuget Fable.Core
+  nuget Fable.Elmish
+  nuget Fable.Elmish.Debugger
+  nuget Fable.Elmish.React
+  nuget Fable.Elmish.HMR
+  nuget Fable.Elmish.Browser
+  nuget Fable.React
+  nuget Fulma
+  nuget Fulma.Extensions
+
+  clitool dotnet-fable

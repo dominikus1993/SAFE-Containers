@@ -1,0 +1,11 @@
+FSharp.Core
+
+group Service
+  Hopac
+  Http.fs
+  Microsoft.AspNetCore.App
+  Giraffe
+  Microsoft.FSharpLu.Json
+
+
+
