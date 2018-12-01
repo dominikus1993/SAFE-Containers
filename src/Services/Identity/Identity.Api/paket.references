@@ -1,0 +1,11 @@
+FSharp.Core
+
+group Service
+  Microsoft.AspNetCore.App
+  FSharp.Core
+  Saturn
+  TaskBuilder.fs
+  System.IdentityModel.Tokens.Jwt
+
+
+
