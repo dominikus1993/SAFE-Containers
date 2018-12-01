@@ -6,6 +6,10 @@
 pool:
   vmImage: 'Ubuntu 16.04'
 
+task: DotNetCoreInstaller@0
+  inputs:
+    version: '2.1.500' # replace this value with the version that you need for your project
+
 variables:
   buildConfiguration: 'Release'
 
