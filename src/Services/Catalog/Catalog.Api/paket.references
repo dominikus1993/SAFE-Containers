@@ -1,0 +1,12 @@
+FSharp.Core
+
+group Service
+  App.Metrics.Extensions.DependencyInjection
+  Microsoft.AspNetCore.App
+  MongoDB.Driver
+  Saturn
+  TaskBuilder.fs
+
+
+
+

@@ -1,11 +1,12 @@
 FSharp.Core
-Fulma
-Fulma.Extensions
-Fulma.Elmish
-Fable.React
-Fable.Elmish.Browser
-Fable.Elmish.Debugger
-Fable.Elmish.React
-Fable.Elmish.HMR
-Fable.Core
-dotnet-fable
+
+group Client
+  Fulma
+  Fulma.Extensions
+  Fable.React
+  Fable.Elmish.Browser
+  Fable.Elmish.Debugger
+  Fable.Elmish.React
+  Fable.Elmish.HMR
+  Fable.Core
+  dotnet-fable

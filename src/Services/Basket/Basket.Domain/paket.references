@@ -1,0 +1,6 @@
+FSharp.Core
+
+group Service
+  Microsoft.FSharpLu.Json
+  TaskBuilder.fs
+  StackExchange.Redis
