@@ -12,7 +12,12 @@ group Service
   nuget TaskBuilder.fs
   nuget StackExchange.Redis
   nuget System.IdentityModel.Tokens.Jwt
+  nuget Microsoft.FSharpLu.Json
 
+
+  nuget Expecto
+  nuget YoloDev.Expecto.TestSdk
+  nuget Microsoft.NET.Test.Sdk
 group Client
   source https://nuget.org/api/v2
   storage:none
