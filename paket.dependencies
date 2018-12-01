@@ -13,11 +13,28 @@ group Service
   nuget StackExchange.Redis
   nuget System.IdentityModel.Tokens.Jwt
   nuget Microsoft.FSharpLu.Json
+  nuget App.Metrics.AspNetCore.Endpoints
+  nuget App.Metrics.AspNetCore.Health
+  nuget App.Metrics.AspNetCore.Health.Endpoints
+  nuget App.Metrics.AspNetCore.Mvc
+  nuget App.Metrics.AspNetCore.Tracking
+  nuget Consul
+  nuget MongoDB.Driver
+  nuget Microsoft.AspNetCore.Hosting.Abstractions
+  nuget Akka
+  nuget Akka.FSharp
+  nuget Akka.Streams
+  nuget Argu
+  nuget Bogus
 
 
+  nuget xunit
+  nuget xunit.runner.visualstudio
   nuget Expecto
+  nuget Expecto.TestResults
   nuget YoloDev.Expecto.TestSdk
   nuget Microsoft.NET.Test.Sdk
+
 group Client
   source https://nuget.org/api/v2
   storage:none
