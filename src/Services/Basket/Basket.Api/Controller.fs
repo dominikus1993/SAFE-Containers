@@ -9,7 +9,7 @@ open Microsoft.AspNetCore.Http
 open Saturn
 open Giraffe
 open Microsoft.AspNetCore.Mvc
-open FSharp.Control.Tasks
+open FSharp.Control.Tasks.V2
 
 module CustomerBasketItem =
 

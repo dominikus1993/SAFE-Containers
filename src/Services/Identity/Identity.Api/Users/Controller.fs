@@ -1,6 +1,6 @@
 namespace Identity.Api.Auth.Users
 
-module Controller = 
+module Controller =
 
     open Microsoft.AspNetCore.Http
     open Giraffe
@@ -10,6 +10,7 @@ module Controller =
     open Identity.Domain.Config
     open Identity.Domain.Users.Helpers
     open Saturn
+    open FSharp.Control.Tasks.V2
 
     let handleGetToken =
         fun (next : HttpFunc) (ctx : HttpContext) ->
@@ -19,7 +20,7 @@ module Controller =
                 let usersRepository = ctx.GetService<IUsersRepository>()
                 let! tokenResult = UsersService.loginAsync usersRepository.GetUser (Crypto.jwt(config.Value)) loginDto
                 match tokenResult with
-                | Ok(token) -> 
+                | Ok(token) ->
                      return! Successful.OK token next ctx
                 | Error(err) ->
                     return! RequestErrors.BAD_REQUEST err next ctx
@@ -33,12 +34,12 @@ module Controller =
                 let usersRepository = ctx.GetService<IUsersRepository>()
                 let! result = UsersService.registerUser usersRepository.RegisterUser (Crypto.jwt(config.Value)) registerDto
                 match result with
-                | Ok(token) -> 
+                | Ok(token) ->
                      return! Response.created ctx token
                 | Error(err) ->
                     return! Response.badRequest ctx err
             }
-   
+
     let usersController = controller {
         create (handleRegister)
 }
