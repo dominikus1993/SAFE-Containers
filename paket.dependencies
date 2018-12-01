@@ -1,10 +1,12 @@
 source https://nuget.org/api/v2
+framework: netcoreapp2.1, netstandard2.0
 
 nuget FSharp.Core
 
 group Service
   source https://nuget.org/api/v2
   storage:none
+  framework: netcoreapp2.1, netstandard2.0
 
   nuget App.Metrics.Extensions.DependencyInjection
   nuget Microsoft.AspNetCore.App
@@ -40,6 +42,7 @@ group Service
 group Client
   source https://nuget.org/api/v2
   storage:none
+  framework: netstandard2.0
 
   nuget Fable.Core
   nuget Fable.Elmish
