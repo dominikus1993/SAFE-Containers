@@ -12,7 +12,7 @@ var CONFIG = {
         "app": [
             "whatwg-fetch",
             "@babel/polyfill",
-            resolve("./WebSpa.fsproj")
+            resolve("./WebSPA.fsproj")
         ]
     },
     devServerProxy: {
