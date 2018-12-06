@@ -1,8 +1,8 @@
-FROM microsoft/dotnet:2.1-aspnetcore-runtime-alpine AS base
+FROM microsoft/dotnet:2.2-aspnetcore-runtime-alpine AS base
 WORKDIR /app
 EXPOSE 80
 
-FROM microsoft/dotnet:2.1-sdk-stretch AS build
+FROM microsoft/dotnet:2.2-sdk-stretch AS build
 WORKDIR /src
 COPY . .
 RUN dotnet tool install --tool-path ".paket" paket

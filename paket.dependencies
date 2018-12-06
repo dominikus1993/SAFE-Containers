@@ -6,7 +6,7 @@ nuget FSharp.Core
 group Service
   source https://nuget.org/api/v2
   storage:none
-  framework: netcoreapp2.1, netstandard2.0
+  framework: netcoreapp2.2, netstandard2.0
 
   nuget App.Metrics.Extensions.DependencyInjection
   nuget Microsoft.AspNetCore.App
