@@ -3,6 +3,5 @@ FSharp.Core
 group Service
   App.Metrics.Extensions.DependencyInjection
   Microsoft.AspNetCore.App
-  Saturn
-  TaskBuilder.fs
+  Giraffe
   StackExchange.Redis

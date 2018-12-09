@@ -14,5 +14,10 @@
     <ProjectReference Include="..\Basket.Domain\Basket.Domain.fsproj" />
     <ProjectReference Include="..\..\..\Infrastructure\Common\Common.fsproj" />
   </ItemGroup>
+    <ItemGroup>
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="..\..\..\..\.paket\Paket.Restore.targets" />
 </Project>

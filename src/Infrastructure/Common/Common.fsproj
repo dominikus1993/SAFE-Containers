@@ -7,7 +7,7 @@
     <Compile Include="Config.fs" />
     <Compile Include="MongoDb.fs" />
     <Compile Include="AppMetrics.fs" />
-    <Compile Include="Saturn.fs" />
+    <Compile Include="Giraffe.fs" />
     <Compile Include="Environment.fs" />
     <Compile Include="Rop.fs" />
   </ItemGroup>

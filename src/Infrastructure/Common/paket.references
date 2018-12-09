@@ -7,4 +7,5 @@ group Service
   App.Metrics.AspNetCore.Mvc
   App.Metrics.AspNetCore.Tracking
   MongoDB.Driver
+  Giraffe
   Microsoft.AspNetCore.Hosting.Abstractions
