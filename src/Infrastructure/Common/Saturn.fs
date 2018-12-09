@@ -16,6 +16,7 @@ open App.Metrics.AspNetCore.Endpoints
 open Config
 open Consul
 open System
+
 type ApplicationBuilder with
   [<CustomOperation("use_pathbase")>]
   member __.UsePathBase(state: ApplicationState, path: string) =
