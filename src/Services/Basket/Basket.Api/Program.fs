@@ -47,6 +47,12 @@ let configureApp (app : IApplicationBuilder) =
        .UseStaticFiles()
        .UseResponseCaching()
        .UseGiraffe webApp
+    app.UseCors(fun policy ->
+                  policy.AllowAnyHeader() |> ignore
+                  policy.AllowAnyOrigin() |> ignore
+                  policy.AllowAnyMethod() |> ignore
+                  policy.AllowCredentials() |> ignore
+                ) |> ignore
     let pathbase = Environment.getOrElse "PATH_BASE" ""
     if String.IsNullOrEmpty(pathbase) |> not then
       app.UsePathBase(PathString(pathbase)) |> ignore
