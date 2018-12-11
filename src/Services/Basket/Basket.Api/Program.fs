@@ -18,6 +18,7 @@ open Microsoft.IdentityModel.Tokens
 open System.Text
 open StackExchange.Redis
 open Basket.Domain.Storage
+open Basket.Domain.Model.Aggregates
 
 
 let errorHandler (ex : Exception) (logger : ILogger) =
@@ -29,35 +30,16 @@ let parsingErrorHandler err = RequestErrors.BAD_REQUEST err
 
 let webApp =
     choose [
-        GET >=>
-            choose [
-                route  "/" >=> handler
-            ]
+        subRoute "/" Basket.Api.Controller.CustomerBasket.controller
         RequestErrors.notFound (text "Not Found") ]
 
 // ---------------------------------
 // Main
 // ---------------------------------
 
-let configuration =
-  ConfigurationBuilder().AddJsonFile("appsettings.json").AddEnvironmentVariables().Build()
 
-let configureApp (app : IApplicationBuilder) =
-    app.UseGiraffeErrorHandler(errorHandler)
-       .UseStaticFiles()
-       .UseResponseCaching()
-       .UseGiraffe webApp
-    app.UseCors(fun policy ->
-                  policy.AllowAnyHeader() |> ignore
-                  policy.AllowAnyOrigin() |> ignore
-                  policy.AllowAnyMethod() |> ignore
-                  policy.AllowCredentials() |> ignore
-                ) |> ignore
-    let pathbase = Environment.getOrElse "PATH_BASE" ""
-    if String.IsNullOrEmpty(pathbase) |> not then
-      app.UsePathBase(PathString(pathbase)) |> ignore
-
-let configureServices (services : IServiceCollection) =
+type Startup(configuration: IConfiguration) =
+  member __.ConfigureServices (services : IServiceCollection) =
     services
         .AddResponseCaching()
         .AddGiraffe() |> ignore
@@ -74,6 +56,23 @@ let configureServices (services : IServiceCollection) =
     services.AddSingleton<IConnectionMultiplexer>(fun opt -> ConnectionMultiplexer.Connect(configuration.["Service:Database:Connection"]) :> IConnectionMultiplexer) |> ignore
     services.AddTransient<ICustomerBasketRepository>(fun opt -> CustomerBasket.storage (opt.GetService<IConnectionMultiplexer>())) |> ignore
 
+  member __.Configure (app : IApplicationBuilder)
+                        (env : IHostingEnvironment)
+                        (loggerFactory : ILoggerFactory) =
+    app.UseGiraffeErrorHandler(errorHandler)
+       .UseStaticFiles()
+       .UseResponseCaching()
+       .UseGiraffe webApp
+    app.UseCors(fun policy ->
+                  policy.AllowAnyHeader() |> ignore
+                  policy.AllowAnyOrigin() |> ignore
+                  policy.AllowAnyMethod() |> ignore
+                  policy.AllowCredentials() |> ignore
+                ) |> ignore
+    let pathbase = Environment.getOrElse "PATH_BASE" ""
+    if String.IsNullOrEmpty(pathbase) |> not then
+      app.UsePathBase(PathString(pathbase)) |> ignore
+
 let configureLogging (loggerBuilder : ILoggingBuilder) =
     loggerBuilder.AddFilter(fun lvl -> lvl.Equals LogLevel.Error)
                  .AddConsole()
@@ -82,8 +81,7 @@ let configureLogging (loggerBuilder : ILoggingBuilder) =
 [<EntryPoint>]
 let main _ =
     WebHost.CreateDefaultBuilder()
-        .Configure(Action<IApplicationBuilder> configureApp)
-        .ConfigureServices(configureServices)
+        .UseStartup<Startup>()
         .ConfigureLogging(configureLogging)
         .Build()
         .Run()

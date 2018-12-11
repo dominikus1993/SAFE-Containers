@@ -17,8 +17,8 @@ services:
       dockerfile: src/Services/Basket/Basket.Api/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - API_URL=http://0.0.0.0:80
-      - REDIS_CONNECTION=basket.data:6379
+      - ASPNETCORE_URLS=http://0.0.0.0:80
+      - Service__Database__Connection=basket.data:6379
       - PATH_BASE=/basket
     depends_on:
       - basket.data
