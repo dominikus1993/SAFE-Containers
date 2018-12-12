@@ -55,6 +55,7 @@ type Startup(configuration: IConfiguration) =
                           ) |> ignore
     services.AddSingleton<IConnectionMultiplexer>(fun opt -> ConnectionMultiplexer.Connect(configuration.["Service:Database:Connection"]) :> IConnectionMultiplexer) |> ignore
     services.AddTransient<ICustomerBasketRepository>(fun opt -> CustomerBasket.storage (opt.GetService<IConnectionMultiplexer>())) |> ignore
+    services.AddCors() |> ignore
 
   member __.Configure (app : IApplicationBuilder)
                         (env : IHostingEnvironment)
