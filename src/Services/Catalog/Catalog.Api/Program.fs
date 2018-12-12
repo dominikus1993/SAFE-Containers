@@ -10,6 +10,8 @@ open System
 open Microsoft.Extensions.Logging
 open Giraffe
 open FSharp.Control.Tasks.V2
+open MongoDB.Driver
+open Catalog.Api.Repositories
 
 let errorHandler (ex : Exception) (logger : ILogger) =
     logger.LogError(EventId(), ex, "An unhandled exception has occurred while executing the request.")
@@ -33,8 +35,13 @@ type Startup(configuration: IConfiguration) =
     services
         .AddResponseCaching()
         .AddGiraffe() |> ignore
-    services.AddSingleton<IConnectionMultiplexer>(fun opt -> ConnectionMultiplexer.Connect(configuration.["Service:Database:Connection"]) :> IConnectionMultiplexer) |> ignore
-    services.AddTransient<ICustomerBasketRepository>(fun opt -> CustomerBasket.storage (opt.GetService<IConnectionMultiplexer>())) |> ignore
+    services.AddSingleton<IMongoClient>(fun opt -> MongoClient(configuration.["Service:Database:Connection"]) :> IMongoClient) |> ignore
+    services.AddTransient<IProductRepository>(fun provider ->
+                                                    Product.storage(MongoDb(provider.GetService<IMongoClient>().GetDatabase("Catalog")))
+                                            ) |> ignore
+    services.AddTransient<ITagsRepository>(fun provider ->
+                                                    Tags.storage(MongoDb(provider.GetService<IMongoClient>().GetDatabase("Catalog")))
+                                          ) |> ignore
     services.AddCors() |> ignore
 
   member __.Configure (app : IApplicationBuilder)

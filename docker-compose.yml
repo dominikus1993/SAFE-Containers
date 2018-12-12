@@ -29,8 +29,8 @@ services:
       dockerfile: src/Services/Catalog/Catalog.Api/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - API_URL=http://0.0.0.0:80
-      - MONGO_CONNECTION=mongodb://catalog.data:27017
+      - ASPNETCORE_URLS=http://0.0.0.0:80
+      - Service__Database__Connection=mongodb://catalog.data:27017
       - PATH_BASE=/catalog
     depends_on:
       - catalog.data
