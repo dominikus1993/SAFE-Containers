@@ -1,54 +1,62 @@
 namespace Catalog.Api.Controllers
-open Saturn
 open FSharp.Control.Tasks
 open Microsoft.AspNetCore.Http
 open Giraffe
 open Catalog.Api.Services
 open Catalog.Api.Model
 open Catalog.Api.Repositories
+open Giraffe.HttpStatusCodeHandlers
 
 module Tags =
   let private indexAction =
-    fun (ctx : HttpContext) ->
+    fun (next : HttpFunc) (ctx: HttpContext) ->
       task {
         let repo = ctx.GetService<ITagsRepository>()
         match! Tags.all (repo.All) with
         | Ok (data) ->
-           return! Response.ok ctx data
+           return! Successful.OK data next ctx
         | Error er ->
-          return! Response.notFound ctx er.Message
+          return! Successful.NO_CONTENT next ctx
       }
 
-  let controller = controller {
-    index indexAction
-  }
+  let controller: HttpFunc -> HttpContext -> HttpFuncResult =
+    choose [
+      GET >=>
+        choose [
+          route  "/" >=> indexAction
+        ]]
 
 module Products =
 
-  let private showAction =
-    fun (ctx : HttpContext) slug ->
+  let private showAction slug =
+    fun (next : HttpFunc) (ctx: HttpContext) ->
       task {
         let repo = ctx.GetService<IProductRepository>()
         match! Product.getBySlug (repo.GetBySlug) slug with
         | Ok (data) ->
-           return! Response.ok ctx data
+           return! Successful.OK data next ctx
         | Error er ->
-          return! Response.notFound ctx er.Message
+          return! RequestErrors.notFound (text er.Message) next ctx
       }
 
   let private indexAction =
-    fun (ctx : HttpContext) ->
+    fun (next : HttpFunc) (ctx: HttpContext) ->
       task {
         let repo = ctx.GetService<IProductRepository>()
-        let queryS = Controller.getQuery<GetProducts> ctx
+        let queryS = ctx.BindQueryString<GetProducts>()
         match! Product.get (repo.Browse) queryS with
         | Ok (data) ->
-           return! Response.ok ctx data
+           return! Successful.OK data next ctx
         | Error er ->
-          return! Response.notFound ctx er.Message
+          return! RequestErrors.notFound (text er.Message) next ctx
       }
 
-  let controller = controller {
-    index indexAction
-    show showAction
-  }
+
+  let controller: HttpFunc -> HttpContext -> HttpFuncResult =
+    choose [
+      GET >=>
+        choose [
+          route  "/" >=> indexAction
+          routef "/%s" showAction
+        ]
+      subRoute "/items" Tags.controller ]

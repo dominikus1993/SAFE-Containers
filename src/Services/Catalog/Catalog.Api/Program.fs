@@ -22,7 +22,7 @@ let parsingErrorHandler err = RequestErrors.BAD_REQUEST err
 
 let webApp =
     choose [
-        subRoute "/" Basket.Api.Controller.CustomerBasket.controller
+        subRoute "/" Catalog.Api.Controllers.Products.controller
         RequestErrors.notFound (text "Not Found") ]
 
 // ---------------------------------
