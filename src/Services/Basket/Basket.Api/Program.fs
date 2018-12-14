@@ -61,10 +61,6 @@ type Startup(configuration: IConfiguration) =
   member __.Configure (app : IApplicationBuilder)
                         (env : IHostingEnvironment)
                         (loggerFactory : ILoggerFactory) =
-    app.UseGiraffeErrorHandler(errorHandler)
-       .UseStaticFiles()
-       .UseResponseCaching()
-       .UseGiraffe webApp
     app.UseCors(fun policy ->
                   policy.AllowAnyHeader() |> ignore
                   policy.AllowAnyOrigin() |> ignore
@@ -74,6 +70,11 @@ type Startup(configuration: IConfiguration) =
     let pathbase = Environment.getOrElse "PATH_BASE" ""
     if String.IsNullOrEmpty(pathbase) |> not then
       app.UsePathBase(PathString(pathbase)) |> ignore
+
+    app.UseGiraffeErrorHandler(errorHandler)
+       .UseStaticFiles()
+       .UseResponseCaching()
+       .UseGiraffe webApp
 
 let configureLogging (loggerBuilder : ILoggingBuilder) =
     loggerBuilder.AddFilter(fun lvl -> lvl.Equals LogLevel.Error)

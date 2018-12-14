@@ -63,16 +63,17 @@ type Startup(configuration: IConfiguration) =
         .AddEntityFrameworkStores<IdentityDbContext<ApplicationUser>>()
         .AddDefaultTokenProviders() |> ignore
     services.Configure<ServiceConfig>(configuration.GetSection("Service")) |> ignore
+    services.AddTransient<IUsersRepository>(fun provider ->
+                                                    let siginManager = provider.GetService<SignInManager<ApplicationUser>>()
+                                                    let userManager = provider.GetService<UserManager<ApplicationUser>>()
+                                                    Repository.usersRepository(Identity(userManager, siginManager))
+    ) |> ignore
     services.AddAppMetrics( match Environment.getOrElse "PATH_BASE" "" with "" -> None | path -> Some(path))
     services.AddCors() |> ignore
 
   member __.Configure (app : IApplicationBuilder)
                         (env : IHostingEnvironment)
                         (loggerFactory : ILoggerFactory) =
-    app.UseGiraffeErrorHandler(errorHandler)
-       .UseStaticFiles()
-       .UseResponseCaching()
-       .UseGiraffe webApp
     app.UseCors(fun policy ->
                   policy.AllowAnyHeader() |> ignore
                   policy.AllowAnyOrigin() |> ignore
@@ -82,6 +83,10 @@ type Startup(configuration: IConfiguration) =
     let pathbase = Environment.getOrElse "PATH_BASE" ""
     if String.IsNullOrEmpty(pathbase) |> not then
       app.UsePathBase(PathString(pathbase)) |> ignore
+    app.UseGiraffeErrorHandler(errorHandler)
+       .UseStaticFiles()
+       .UseResponseCaching()
+       .UseGiraffe webApp
 
 let configureLogging (loggerBuilder : ILoggingBuilder) =
     loggerBuilder.AddFilter(fun lvl -> lvl.Equals LogLevel.Error)
