@@ -3,7 +3,7 @@ FSharp.Core
 group Service
   Microsoft.AspNetCore.App
   FSharp.Core
-  Saturn
+  Giraffe
   TaskBuilder.fs
   System.IdentityModel.Tokens.Jwt
 

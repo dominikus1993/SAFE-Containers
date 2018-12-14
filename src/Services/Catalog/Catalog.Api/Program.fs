@@ -42,6 +42,7 @@ type Startup(configuration: IConfiguration) =
     services.AddTransient<ITagsRepository>(fun provider ->
                                                     Tags.storage(MongoDb(provider.GetService<IMongoClient>().GetDatabase("Catalog")))
                                           ) |> ignore
+    services.AddAppMetrics( match Environment.getOrElse "PATH_BASE" "" with "" -> None | path -> Some(path))
     services.AddCors() |> ignore
 
   member __.Configure (app : IApplicationBuilder)
@@ -69,6 +70,7 @@ let configureLogging (loggerBuilder : ILoggingBuilder) =
 [<EntryPoint>]
 let main _ =
     WebHost.CreateDefaultBuilder()
+        .UseAppMetrics()
         .UseStartup<Startup>()
         .ConfigureLogging(configureLogging)
         .Build()
