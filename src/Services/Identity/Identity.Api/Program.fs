@@ -28,12 +28,13 @@ let errorHandler (ex : Exception) (logger : ILogger) =
 let parsingErrorHandler err = RequestErrors.BAD_REQUEST err
 
 let webApp =
-    choose [
+    subRoute "/api"
+      (choose [
         POST >=> choose [
           route "/token" >=> Identity.Api.Auth.Users.Controller.handleGetToken
         ]
         subRoute "/users" Identity.Api.Auth.Users.Controller.controller
-        RequestErrors.notFound (text "Not Found") ]
+      ])
 
 // ---------------------------------
 // Main

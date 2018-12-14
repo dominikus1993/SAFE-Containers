@@ -101,7 +101,7 @@ module CustomerBasket =
     choose [
       GET >=>
         choose [
-          route  "/" >=> indexAction
+          route  "" >=> indexAction
         ]
       DELETE >=>
         choose [

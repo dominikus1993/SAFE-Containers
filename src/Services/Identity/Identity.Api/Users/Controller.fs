@@ -16,9 +16,9 @@ module Controller =
         fun (next : HttpFunc) (ctx : HttpContext) ->
             task {
                 let! loginDto = ctx.BindModelAsync<LoginDto>()
-                let config = ctx.GetService<IOptions<JwtConfig>>()
+                let config = ctx.GetService<IOptions<ServiceConfig>>()
                 let usersRepository = ctx.GetService<IUsersRepository>()
-                let! tokenResult = UsersService.loginAsync usersRepository.GetUser (Crypto.jwt(config.Value)) loginDto
+                let! tokenResult = UsersService.loginAsync usersRepository.GetUser (Crypto.jwt(config.Value.Jwt)) loginDto
                 match tokenResult with
                 | Ok(token) ->
                      return! Successful.OK token next ctx
@@ -30,9 +30,9 @@ module Controller =
         fun (next : HttpFunc) (ctx : HttpContext) ->
             task {
                 let! registerDto = ctx.BindModelAsync<RegisterDto> ()
-                let config = ctx.GetService<IOptions<JwtConfig>>()
+                let config = ctx.GetService<IOptions<ServiceConfig>>()
                 let usersRepository = ctx.GetService<IUsersRepository>()
-                let! result = UsersService.registerUser usersRepository.RegisterUser (Crypto.jwt(config.Value)) registerDto
+                let! result = UsersService.registerUser usersRepository.RegisterUser (Crypto.jwt(config.Value.Jwt)) registerDto
                 match result with
                 | Ok(token) ->
                      return! Successful.created (json token) next ctx
@@ -43,6 +43,6 @@ module Controller =
     let controller: HttpFunc -> HttpContext -> HttpFuncResult =
       choose [
         POST >=> choose [
-          route "/" >=> handleRegister
+          route "" >=> handleRegister
         ]
       ]

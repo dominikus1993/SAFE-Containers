@@ -21,10 +21,11 @@ let errorHandler (ex : Exception) (logger : ILogger) =
 let parsingErrorHandler err = RequestErrors.BAD_REQUEST err
 
 let webApp =
-    choose [
+    subRoute "/api"
+      (choose [
         subRoute "/products" Catalog.Api.Controllers.Products.controller
         subRoute "/tags" Catalog.Api.Controllers.Tags.controller
-        RequestErrors.notFound (text "Not Found") ]
+      ])
 
 // ---------------------------------
 // Main

@@ -23,7 +23,7 @@ module Tags =
     choose [
       GET >=>
         choose [
-          route  "/" >=> indexAction
+          route  "" >=> indexAction
         ]]
 
 module Products =
@@ -56,6 +56,6 @@ module Products =
     choose [
       GET >=>
         choose [
-          route  "/" >=> indexAction
+          route  "" >=> indexAction
           routef "/%s" showAction
         ]]
