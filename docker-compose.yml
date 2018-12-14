@@ -8,7 +8,7 @@ services:
       dockerfile: src/Services/Identity/Identity.Api/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - API_URL=http://0.0.0.0:80
+      - ASPNETCORE_URLS=http://0.0.0.0:80
       - PATH_BASE=/identity
   basket.api:
     image: safe_shop/basket.api:${TAG:-latest}
