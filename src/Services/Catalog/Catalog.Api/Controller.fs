@@ -58,5 +58,4 @@ module Products =
         choose [
           route  "/" >=> indexAction
           routef "/%s" showAction
-        ]
-      subRoute "/items" Tags.controller ]
+        ]]
