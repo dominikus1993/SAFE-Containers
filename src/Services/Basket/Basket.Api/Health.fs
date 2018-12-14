@@ -6,7 +6,7 @@ open System.Threading.Tasks
 open App.Metrics.Health
 
 type RedisHealthCheck(multiplexer: IConnectionMultiplexer) =
-  inherit HealthCheck("RedisDb")
+  inherit HealthCheck("Redis")
 
   override this.CheckAsync(ct): HealthCheckResult ValueTask =
     let t = task {

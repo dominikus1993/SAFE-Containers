@@ -24,10 +24,9 @@ module CustomerBasketItem =
         let! basket = CustomerBasket.addItem repo.Get repo.Insert repo.Update (Guid.Parse(basketId), userId) basketItem |> Async.StartAsTask
         match basket with
         | Ok data ->
-          return Successful.OK  (data |> CustomerBasketResponseDto.fromDto) next ctx
+          return! Successful.OK  (data |> CustomerBasketResponseDto.fromDto) next ctx
         | Error err ->
-
-          return ServerErrors.internalError (text "Error") next ctx
+          return! ServerErrors.internalError (text "Error") next ctx
       }
   let private removeBasketItem (basketId: string) =
     fun (next : HttpFunc)  (ctx: HttpContext) ->
@@ -38,33 +37,44 @@ module CustomerBasketItem =
         let! basket = CustomerBasket.removeItem repo.Get repo.Update (Guid.Parse(basketId), userId) { ProductId = Guid.Parse(basketId); Quantity = query.Quantity} |> Async.StartAsTask
         match basket with
         | Ok data ->
-          return Successful.OK (data |> CustomerBasketResponseDto.fromDto) next ctx
+          return! Successful.OK (data |> CustomerBasketResponseDto.fromDto) next ctx
         | Error err ->
           match err with
           | BasketNotExists ->
-            return Successful.OK (CustomerBasket.zero(Guid.NewGuid())(userId) |> CustomerBasketResponseDto.fromDomain) next ctx
+            return! Successful.OK (CustomerBasket.zero(Guid.NewGuid())(userId) |> CustomerBasketResponseDto.fromDomain) next ctx
           | _ ->
-            return ServerErrors.internalError (text "Error") next ctx
+            return! ServerErrors.internalError (text "Error") next ctx
       }
 
+  let controller =
+    choose [
+      POST >=>
+        choose [
+          routef "/%s" addBasketItem
+        ]
+      DELETE >=>
+        choose [
+          routef "/%s" removeBasketItem
+        ]
+    ]
 module CustomerBasket =
-  let private indexAction =
+  let indexAction =
     fun (next : HttpFunc)  (ctx: HttpContext)  ->
       task {
         let userId = (ctx.User.FindFirst ClaimTypes.NameIdentifier).Value |> Guid.Parse
         let repo =  ctx.GetService<ICustomerBasketRepository>()
         match! CustomerBasket.get repo.Get (userId) |> Async.StartAsTask with
         | Ok data ->
-          return Successful.OK ("") next ctx
+          return! Successful.OK ("") next ctx
         | Error err ->
             match err with
             | BasketNotExists ->
-              return Successful.OK (CustomerBasket.zero(Guid.NewGuid())(userId) |> CustomerBasketResponseDto.fromDomain) next ctx
+              return! Successful.OK (CustomerBasket.zero(Guid.NewGuid())(userId) |> CustomerBasketResponseDto.fromDomain) next ctx
             | _ ->
-              return ServerErrors.internalError (text "Error") next ctx
+              return! ServerErrors.internalError (text "Error") next ctx
       }
 
-  let private deleteAction(id: string)  =
+  let deleteAction(id: string)  =
     fun (next : HttpFunc) (ctx: HttpContext) ->
       task {
         let userId = (ctx.User.FindFirst ClaimTypes.NameIdentifier).Value |> Guid.Parse
@@ -77,14 +87,24 @@ module CustomerBasket =
                   |> Async.StartAsTask
         match r with
         | Ok data ->
-          return Successful.OK  (data |> CustomerBasketResponseDto.fromDto) next ctx
+          return! Successful.OK  (data |> CustomerBasketResponseDto.fromDto) next ctx
         | Error err ->
             match err with
             | BasketNotExists ->
-              return Successful.OK (CustomerBasket.zero(Guid.NewGuid())(userId) |> CustomerBasketResponseDto.fromDomain) next ctx
+              return! Successful.OK (CustomerBasket.zero(Guid.NewGuid())(userId) |> CustomerBasketResponseDto.fromDomain) next ctx
             | _ ->
 
-              return ServerErrors.internalError (text "Error") next ctx
+              return! ServerErrors.internalError (text "Error") next ctx
       }
 
-let controller = []
+  let controller: HttpFunc -> HttpContext -> HttpFuncResult =
+    choose [
+      GET >=>
+        choose [
+          route  "/" >=> indexAction
+        ]
+      DELETE >=>
+        choose [
+          routef "/%s" deleteAction
+        ]
+      subRoute "/items" CustomerBasketItem.controller ]

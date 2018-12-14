@@ -10,7 +10,6 @@ group Service
 
   nuget App.Metrics.Extensions.DependencyInjection
   nuget Microsoft.AspNetCore.App
-  nuget Saturn
   nuget TaskBuilder.fs
   nuget StackExchange.Redis
   nuget System.IdentityModel.Tokens.Jwt
@@ -20,7 +19,6 @@ group Service
   nuget App.Metrics.AspNetCore.Health.Endpoints
   nuget App.Metrics.AspNetCore.Mvc
   nuget App.Metrics.AspNetCore.Tracking
-  nuget Consul
   nuget MongoDB.Driver
   nuget Microsoft.AspNetCore.Hosting.Abstractions
   nuget Akka

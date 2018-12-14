@@ -14,6 +14,11 @@ open System.Collections.Generic
 open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.Options
 open Microsoft.AspNetCore.Authentication.JwtBearer
+open Microsoft.IdentityModel.Tokens
+open System.Text
+open StackExchange.Redis
+open Basket.Domain.Storage
+open Basket.Domain.Model.Aggregates
 
 
 let errorHandler (ex : Exception) (logger : ILogger) =
@@ -25,29 +30,50 @@ let parsingErrorHandler err = RequestErrors.BAD_REQUEST err
 
 let webApp =
     choose [
-        GET >=>
-            choose [
-                route  "/" >=> handler
-            ]
+        subRoute "/" Basket.Api.Controller.CustomerBasket.controller
         RequestErrors.notFound (text "Not Found") ]
 
 // ---------------------------------
 // Main
 // ---------------------------------
 
-let configuration =
-  ConfigurationBuilder().AddJsonFile("appsettings.json").AddEnvironmentVariables().Build()
 
-let configureApp (app : IApplicationBuilder) =
+type Startup(configuration: IConfiguration) =
+  member __.ConfigureServices (services : IServiceCollection) =
+    services
+        .AddResponseCaching()
+        .AddGiraffe() |> ignore
+    services.AddAuthentication(fun opt ->
+                                opt.DefaultAuthenticateScheme <- JwtBearerDefaults.AuthenticationScheme
+                                opt.DefaultChallengeScheme <- JwtBearerDefaults.AuthenticationScheme
+                              )
+            .AddJwtBearer(fun cfg ->
+                            let issuer = configuration.["Service:Jwt:Issuer"]
+                            let secret = SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.["Service:Jwt:SecretKey"]))
+                            cfg.IncludeErrorDetails <- true
+                            cfg.TokenValidationParameters <- TokenValidationParameters(ValidateAudience = true, ValidateIssuer = true, ValidIssuer = issuer, ValidAudience = issuer, IssuerSigningKey = secret)
+                          ) |> ignore
+    services.AddSingleton<IConnectionMultiplexer>(fun opt -> ConnectionMultiplexer.Connect(configuration.["Service:Database:Connection"]) :> IConnectionMultiplexer) |> ignore
+    services.AddTransient<ICustomerBasketRepository>(fun opt -> CustomerBasket.storage (opt.GetService<IConnectionMultiplexer>())) |> ignore
+    services.AddAppMetrics( match Environment.getOrElse "PATH_BASE" "" with "" -> None | path -> Some(path))
+    services.AddCors() |> ignore
+
+  member __.Configure (app : IApplicationBuilder)
+                        (env : IHostingEnvironment)
+                        (loggerFactory : ILoggerFactory) =
     app.UseGiraffeErrorHandler(errorHandler)
        .UseStaticFiles()
        .UseResponseCaching()
        .UseGiraffe webApp
-
-let configureServices (services : IServiceCollection) =
-    services
-        .AddResponseCaching()
-        .AddGiraffe() |> ignore
+    app.UseCors(fun policy ->
+                  policy.AllowAnyHeader() |> ignore
+                  policy.AllowAnyOrigin() |> ignore
+                  policy.AllowAnyMethod() |> ignore
+                  policy.AllowCredentials() |> ignore
+                ) |> ignore
+    let pathbase = Environment.getOrElse "PATH_BASE" ""
+    if String.IsNullOrEmpty(pathbase) |> not then
+      app.UsePathBase(PathString(pathbase)) |> ignore
 
 let configureLogging (loggerBuilder : ILoggingBuilder) =
     loggerBuilder.AddFilter(fun lvl -> lvl.Equals LogLevel.Error)
@@ -57,8 +83,8 @@ let configureLogging (loggerBuilder : ILoggingBuilder) =
 [<EntryPoint>]
 let main _ =
     WebHost.CreateDefaultBuilder()
-        .Configure(Action<IApplicationBuilder> configureApp)
-        .ConfigureServices(configureServices)
+        .UseAppMetrics()
+        .UseStartup<Startup>()
         .ConfigureLogging(configureLogging)
         .Build()
         .Run()
