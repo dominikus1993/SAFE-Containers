@@ -43,7 +43,6 @@ open Elmish.HMR
 Program.mkProgram Catalog.State.init Catalog.State.update Catalog.View.view
 #if DEBUG
 |> Program.withDebugger
-// |> Program.withHMR
 #endif
 |> Program.withReact "elmish-app"
 |> Program.run

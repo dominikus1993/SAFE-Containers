@@ -1,16 +1,15 @@
 source https://nuget.org/api/v2
-framework: netcoreapp2.1, netstandard2.0
+framework: netcoreapp2.2, netstandard2.0
 
 nuget FSharp.Core
 
 group Service
   source https://nuget.org/api/v2
   storage:none
-  framework: netcoreapp2.1, netstandard2.0
+  framework: netcoreapp2.2, netstandard2.0
 
   nuget App.Metrics.Extensions.DependencyInjection
   nuget Microsoft.AspNetCore.App
-  nuget Saturn
   nuget TaskBuilder.fs
   nuget StackExchange.Redis
   nuget System.IdentityModel.Tokens.Jwt
@@ -20,7 +19,6 @@ group Service
   nuget App.Metrics.AspNetCore.Health.Endpoints
   nuget App.Metrics.AspNetCore.Mvc
   nuget App.Metrics.AspNetCore.Tracking
-  nuget Consul
   nuget MongoDB.Driver
   nuget Microsoft.AspNetCore.Hosting.Abstractions
   nuget Akka

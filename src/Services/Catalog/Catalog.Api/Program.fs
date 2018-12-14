@@ -1,45 +1,83 @@
 ﻿module Catalog.Api.App
-
+open Microsoft.AspNetCore
+open Microsoft.AspNetCore.Builder
+open Microsoft.AspNetCore.Hosting
+open Microsoft.AspNetCore.Http
+open Microsoft.Extensions.Logging
+open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.DependencyInjection
-open Saturn
+open System
+open Microsoft.Extensions.Logging
+open Giraffe
+open FSharp.Control.Tasks.V2
 open MongoDB.Driver
-open Catalog.Api.Controllers
 open Catalog.Api.Repositories
-open Microsoft.AspNetCore.Cors.Infrastructure
 
-let configureServices (services : IServiceCollection) =
-    services.AddSingleton<IMongoClient>(fun opt -> MongoClient(Environment.getOrElse "MONGO_CONNECTION" "mongodb://127.0.0.1:27017") :> IMongoClient) |> ignore
+let errorHandler (ex : Exception) (logger : ILogger) =
+    logger.LogError(EventId(), ex, "An unhandled exception has occurred while executing the request.")
+    clearResponse >=> setStatusCode 500 >=> text ex.Message
+
+
+let parsingErrorHandler err = RequestErrors.BAD_REQUEST err
+
+let webApp =
+    subRoute "/api"
+      (choose [
+        subRoute "/products" Catalog.Api.Controllers.Products.controller
+        subRoute "/tags" Catalog.Api.Controllers.Tags.controller
+      ])
+
+// ---------------------------------
+// Main
+// ---------------------------------
+
+
+type Startup(configuration: IConfiguration) =
+  member __.ConfigureServices (services : IServiceCollection) =
+    services
+        .AddResponseCaching()
+        .AddGiraffe() |> ignore
+    services.AddSingleton<IMongoClient>(fun opt -> MongoClient(configuration.["Service:Database:Connection"]) :> IMongoClient) |> ignore
     services.AddTransient<IProductRepository>(fun provider ->
                                                     Product.storage(MongoDb(provider.GetService<IMongoClient>().GetDatabase("Catalog")))
                                             ) |> ignore
     services.AddTransient<ITagsRepository>(fun provider ->
                                                     Tags.storage(MongoDb(provider.GetService<IMongoClient>().GetDatabase("Catalog")))
-                                            ) |> ignore
-    services
+                                          ) |> ignore
+    services.AddAppMetrics( match Environment.getOrElse "PATH_BASE" "" with "" -> None | path -> Some(path))
+    services.AddCors() |> ignore
 
+  member __.Configure (app : IApplicationBuilder)
+                        (env : IHostingEnvironment)
+                        (loggerFactory : ILoggerFactory) =
 
+    app.UseCors(fun policy ->
+                  policy.AllowAnyHeader() |> ignore
+                  policy.AllowAnyOrigin() |> ignore
+                  policy.AllowAnyMethod() |> ignore
+                  policy.AllowCredentials() |> ignore
+                ) |> ignore
+    let pathbase = Environment.getOrElse "PATH_BASE" ""
+    if String.IsNullOrEmpty(pathbase) |> not then
+      app.UsePathBase(PathString(pathbase)) |> ignore
 
-let topRouter = router {
-    forward "/products" Products.controller
-    forward "/tags" Tags.controller
-}
+    app.UseGiraffeErrorHandler(errorHandler)
+       .UseStaticFiles()
+       .UseResponseCaching()
+       .UseGiraffe webApp
 
-let corsPolicy (config: CorsPolicyBuilder) =
-  config.AllowAnyHeader() |> ignore
-  config.AllowAnyMethod() |> ignore
-  config.AllowAnyOrigin() |> ignore
-  config.AllowCredentials() |> ignore
-
-let app = application {
-    use_router topRouter
-    use_pathbase (Environment.getOrElse "PATH_BASE" "")
-    use_cors ("default")(corsPolicy)
-    url (Environment.getOrElse "API_URL" "http://0.0.0.0:8085/")
-    use_app_metrics ( match Environment.getOrElse "PATH_BASE" "" with "" -> None | path -> Some(path))
-    service_config (configureServices)
-}
+let configureLogging (loggerBuilder : ILoggingBuilder) =
+    loggerBuilder.AddFilter(fun lvl -> lvl.Equals LogLevel.Error)
+                 .AddConsole()
+                 .AddDebug() |> ignore
 
 [<EntryPoint>]
 let main _ =
-    run app
+    WebHost.CreateDefaultBuilder()
+        .UseAppMetrics()
+        .UseStartup<Startup>()
+        .ConfigureLogging(configureLogging)
+        .Build()
+        .Run()
     0
+

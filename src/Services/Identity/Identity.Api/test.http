@@ -1,4 +1,4 @@
-POST http://localhost:8085/token
+POST http://localhost:5000/identity/api/token
 Accept: */*
 Content-Type: application/json
 Cache-Control: no-cache
@@ -8,7 +8,7 @@ Cache-Control: no-cache
 
 ###
 
-POST http://localhost:8085/users
+POST http://localhost:5000/identity/api/users
 Accept: */*
 Content-Type: application/json
 Cache-Control: no-cache

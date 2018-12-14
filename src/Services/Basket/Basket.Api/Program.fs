@@ -1,42 +1,93 @@
 ﻿module Basket.Api.App
 
+open System
+open System.Threading
+open Microsoft.AspNetCore
+open Microsoft.AspNetCore.Builder
+open Microsoft.AspNetCore.Hosting
+open Microsoft.AspNetCore.Http
+open Microsoft.Extensions.Logging
 open Microsoft.Extensions.DependencyInjection
-open Saturn
-open MongoDB.Driver
-open Microsoft.AspNetCore.Cors.Infrastructure
+open FSharp.Control.Tasks.V2.ContextInsensitive
+open Giraffe
+open System.Collections.Generic
+open Microsoft.Extensions.Configuration
+open Microsoft.Extensions.Options
+open Microsoft.AspNetCore.Authentication.JwtBearer
+open Microsoft.IdentityModel.Tokens
+open System.Text
 open StackExchange.Redis
-open Basket.Api.Controller
 open Basket.Domain.Storage
-open Basket.Domain.Storage
-open StackExchange.Redis
+open Basket.Domain.Model.Aggregates
 
-let configureServices (services : IServiceCollection) =
-    services.AddSingleton<IConnectionMultiplexer>(fun opt -> ConnectionMultiplexer.Connect(Environment.getOrElse "REDIS_CONNECTION" "localhost") :> IConnectionMultiplexer) |> ignore
-    services.AddTransient<ICustomerBasketRepository>(fun opt -> CustomerBasket.storage (opt.GetService<IConnectionMultiplexer>())) |> ignore
+
+let errorHandler (ex : Exception) (logger : ILogger) =
+    logger.LogError(EventId(), ex, "An unhandled exception has occurred while executing the request.")
+    clearResponse >=> setStatusCode 500 >=> text ex.Message
+
+
+let parsingErrorHandler err = RequestErrors.BAD_REQUEST err
+
+let webApp =
+    subRoute "/api"
+      (choose [
+        subRoute "/basket" Basket.Api.Controller.CustomerBasket.controller
+      ])
+
+// ---------------------------------
+// Main
+// ---------------------------------
+
+
+type Startup(configuration: IConfiguration) =
+  member __.ConfigureServices (services : IServiceCollection) =
     services
+        .AddResponseCaching()
+        .AddGiraffe() |> ignore
+    services.AddAuthentication(fun opt ->
+                                opt.DefaultAuthenticateScheme <- JwtBearerDefaults.AuthenticationScheme
+                                opt.DefaultChallengeScheme <- JwtBearerDefaults.AuthenticationScheme
+                              )
+            .AddJwtBearer(fun cfg ->
+                            let issuer = configuration.["Service:Jwt:Issuer"]
+                            let secret = SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.["Service:Jwt:SecretKey"]))
+                            cfg.IncludeErrorDetails <- true
+                            cfg.TokenValidationParameters <- TokenValidationParameters(ValidateAudience = true, ValidateIssuer = true, ValidIssuer = issuer, ValidAudience = issuer, IssuerSigningKey = secret)
+                          ) |> ignore
+    services.AddSingleton<IConnectionMultiplexer>(fun opt -> ConnectionMultiplexer.Connect(configuration.["Service:Database:Connection"]) :> IConnectionMultiplexer) |> ignore
+    services.AddTransient<ICustomerBasketRepository>(fun opt -> CustomerBasket.storage (opt.GetService<IConnectionMultiplexer>())) |> ignore
+    services.AddAppMetrics( match Environment.getOrElse "PATH_BASE" "" with "" -> None | path -> Some(path))
+    services.AddCors() |> ignore
 
-let topRouter = router {
-    pipe_through (Auth.requireAuthentication JWT)
-    forward "/basket" CustomerBasket.controller
-}
+  member __.Configure (app : IApplicationBuilder)
+                        (env : IHostingEnvironment)
+                        (loggerFactory : ILoggerFactory) =
+    app.UseCors(fun policy ->
+                  policy.AllowAnyHeader() |> ignore
+                  policy.AllowAnyOrigin() |> ignore
+                  policy.AllowAnyMethod() |> ignore
+                  policy.AllowCredentials() |> ignore
+                ) |> ignore
+    let pathbase = Environment.getOrElse "PATH_BASE" ""
+    if String.IsNullOrEmpty(pathbase) |> not then
+      app.UsePathBase(PathString(pathbase)) |> ignore
 
-let corsPolicy (config: CorsPolicyBuilder) =
-  config.AllowAnyHeader() |> ignore
-  config.AllowAnyMethod() |> ignore
-  config.AllowAnyOrigin() |> ignore
-  config.AllowCredentials() |> ignore
+    app.UseGiraffeErrorHandler(errorHandler)
+       .UseStaticFiles()
+       .UseResponseCaching()
+       .UseGiraffe webApp
 
-let app = application {
-    use_router topRouter
-    use_pathbase (Environment.getOrElse "PATH_BASE" "")
-    use_jwt_authentication (Environment.getOrElse "JWT_SECRET" "ksX9NWD820UKt2T9UkC3jJAaS7W0vvyj") (Environment.getOrElse "JWT_ISSUER" "http://auth.api")
-    use_cors ("default")(corsPolicy)
-    use_app_metrics ( match Environment.getOrElse "PATH_BASE" "" with "" -> None | path -> Some(path))
-    url (Environment.getOrElse "API_URL" "http://0.0.0.0:8086/")
-    service_config (configureServices)
-}
+let configureLogging (loggerBuilder : ILoggingBuilder) =
+    loggerBuilder.AddFilter(fun lvl -> lvl.Equals LogLevel.Error)
+                 .AddConsole()
+                 .AddDebug() |> ignore
 
 [<EntryPoint>]
 let main _ =
-    run app
+    WebHost.CreateDefaultBuilder()
+        .UseAppMetrics()
+        .UseStartup<Startup>()
+        .ConfigureLogging(configureLogging)
+        .Build()
+        .Run()
     0

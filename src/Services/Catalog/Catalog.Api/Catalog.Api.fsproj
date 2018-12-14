@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Health.fs" />
@@ -13,6 +13,9 @@
   <ItemGroup>
     <ProjectReference Include="..\Catalog.Domain\Catalog.Domain.fsproj" />
     <ProjectReference Include="..\..\..\Infrastructure\Common\Common.fsproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="appsettings.json" />
   </ItemGroup>
   <Import Project="..\..\..\..\.paket\Paket.Restore.targets" />
 </Project>
