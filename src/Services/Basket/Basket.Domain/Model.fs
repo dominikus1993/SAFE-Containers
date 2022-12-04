@@ -7,6 +7,7 @@ module Messages =
 module Values =
   open System
   type Id = Guid
+  [<Struct>]
   type History = { CreationTime: DateTime; LastUpdate: DateTime }
 
 module Entities =

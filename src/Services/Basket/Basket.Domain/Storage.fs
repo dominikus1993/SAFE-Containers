@@ -1,10 +1,8 @@
 namespace Basket.Domain.Storage
-open FSharp.Control.Tasks.V2
 open System.Threading.Tasks
 open Basket.Domain.Dto
 open StackExchange.Redis
 open System
-open Microsoft.FSharpLu.Json
 open Basket.Domain.Messages
 
 type ICustomerBasketRepository =
