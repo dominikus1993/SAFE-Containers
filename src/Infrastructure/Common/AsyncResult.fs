@@ -19,3 +19,4 @@ module AsyncResult
 
   let (>>=) a f = bind f a
   let (>=>) f g = compose f g
+

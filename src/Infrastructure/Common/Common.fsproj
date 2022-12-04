@@ -3,10 +3,10 @@
   <ItemGroup>
     <Compile Include="Config.fs" />
     <Compile Include="MongoDb.fs" />
-    <Compile Include="AppMetrics.fs" />
     <Compile Include="Giraffe.fs" />
     <Compile Include="Environment.fs" />
-    <Compile Include="Rop.fs" />
+    <Compile Include="AsyncResult.fs" />
+    <Compile Include="TaskResult.fs" />
   </ItemGroup>
   <Import Project="..\..\..\.paket\Paket.Restore.targets" />
 </Project>
