@@ -1,10 +1,8 @@
 FSharp.Core
 
 group Service
-  Microsoft.AspNetCore.App
   FSharp.Core
   Giraffe
-  TaskBuilder.fs
   System.IdentityModel.Tokens.Jwt
 
 

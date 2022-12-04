@@ -1,7 +1,5 @@
 FSharp.Core
 
 group Service
-  App.Metrics.Extensions.DependencyInjection
-  Microsoft.AspNetCore.App
   Giraffe
   StackExchange.Redis

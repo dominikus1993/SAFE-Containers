@@ -1,11 +1,6 @@
 FSharp.Core
 
 group Service
-  App.Metrics.AspNetCore.Endpoints
-  App.Metrics.AspNetCore.Health
-  App.Metrics.AspNetCore.Health.Endpoints
-  App.Metrics.AspNetCore.Mvc
-  App.Metrics.AspNetCore.Tracking
   MongoDB.Driver
   Giraffe
   Microsoft.AspNetCore.Hosting.Abstractions

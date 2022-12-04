@@ -1,34 +1,27 @@
-source https://nuget.org/api/v2
-framework: netcoreapp2.2, netstandard2.0
+source https://api.nuget.org/v3/index.json
+framework: net7.0
 
 nuget FSharp.Core
 
 group Service
-  source https://nuget.org/api/v2
+  source https://api.nuget.org/v3/index.json
   storage:none
-  framework: netcoreapp2.2, netstandard2.0
+  framework: net7.0
 
-  nuget App.Metrics.Extensions.DependencyInjection
-  nuget Microsoft.AspNetCore.App
-  nuget TaskBuilder.fs
   nuget StackExchange.Redis
   nuget System.IdentityModel.Tokens.Jwt
   nuget Microsoft.FSharpLu.Json
-  nuget App.Metrics.AspNetCore.Endpoints
-  nuget App.Metrics.AspNetCore.Health
-  nuget App.Metrics.AspNetCore.Health.Endpoints
-  nuget App.Metrics.AspNetCore.Mvc
-  nuget App.Metrics.AspNetCore.Tracking
   nuget MongoDB.Driver
   nuget Microsoft.AspNetCore.Hosting.Abstractions
-  nuget Akka
-  nuget Akka.FSharp
-  nuget Akka.Streams
   nuget Argu
   nuget Bogus
-  nuget Hopac
   nuget Http.fs
   nuget Giraffe
+
+group Tests
+  source https://api.nuget.org/v3/index.json
+  storage:none
+  framework: net7.0
 
   nuget xunit
   nuget xunit.runner.visualstudio
@@ -36,20 +29,3 @@ group Service
   nuget Expecto.TestResults
   nuget YoloDev.Expecto.TestSdk
   nuget Microsoft.NET.Test.Sdk
-
-group Client
-  source https://nuget.org/api/v2
-  storage:none
-  framework: netstandard2.0
-
-  nuget Fable.Core
-  nuget Fable.Elmish
-  nuget Fable.Elmish.Debugger
-  nuget Fable.Elmish.React
-  nuget Fable.Elmish.HMR
-  nuget Fable.Elmish.Browser
-  nuget Fable.React
-  nuget Fulma
-  nuget Fulma.Extensions
-
-  clitool dotnet-fable

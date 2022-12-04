@@ -1,6 +1,6 @@
 FSharp.Core
 
-group Service
+group Tests
   Expecto
   YoloDev.Expecto.TestSdk
   Microsoft.NET.Test.Sdk
