@@ -1,6 +1,7 @@
 namespace Order.Domain.Aggregates
 open Order.Domain.Values
+open Order.Domain.Entities
 
-type OrderAggregate = { Id: OrderId } with
+type Order = { Id: OrderId; } with
   static member Create(id: OrderId) =
     { Id = id }

@@ -2,6 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <Compile Include="Values.fs" />
+    <Compile Include="Entities.fs" />
     <Compile Include="Aggregates.fs" />
   </ItemGroup>
   <Import Project="..\..\..\..\.paket\Paket.Restore.targets" />

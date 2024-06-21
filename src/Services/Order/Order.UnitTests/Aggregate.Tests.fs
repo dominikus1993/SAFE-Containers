@@ -10,7 +10,7 @@ let testOrder =
     testList "Create" [
       test "Create" {
         let id = Guid.NewGuid()
-        let subject = OrderAggregate.Create(id)
+        let subject = Order.Create(id)
         Expect.equal subject { Id = id } "OrderAggregate should eq"
       }
     ]
